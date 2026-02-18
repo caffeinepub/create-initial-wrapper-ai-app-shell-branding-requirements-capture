@@ -1,2 +1,3 @@
-# create-initial-wrapper-ai-app-shell-branding-requirements-capture
-Exported from Caffeine project: Create initial Wrapper AI app shell (branding + requirements capture)
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

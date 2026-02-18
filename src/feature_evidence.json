@@ -1,0 +1,63 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-ensure-the-app-enforces-a-home-page-authentication-gate-using-internet-identity-when-the-user-is-not-authenticated-the-app-must-render-only-the-login-screen-and-must-not-allow-access-to-any-other-screens-dashboard-and-all-ai-tools-until-the-user-signs-in",
+      "featureTitle": "Ensure the app enforces a home-page authentication gate using Internet Identity: when the user is not authenticated, the app must render only the Login screen and must not allow access to any other screens (Dashboard and all AI tools) until the user signs in.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-login-screen-user-facing-copy-to-be-fully-in-english-and-to-accurately-reflect-the-currently-supported-authentication-method-internet-identity-only-without-mentioning-email-password-google-oauth-or-apple-sign-in-as-available-options",
+      "featureTitle": "Update the Login screen user-facing copy to be fully in English and to accurately reflect the currently-supported authentication method (Internet Identity only), without mentioning email/password, Google OAuth, or Apple Sign-In as available options.",
+      "files": [
+        "frontend/src/pages/LoginScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-verify-backend-backed-first-login-initialization-so-that-each-new-authenticated-user-receives-200-free-coins-exactly-once-persisted-to-the-user-record-and-the-coin-balance-is-immediately-reflected-in-the-authenticated-ui-after-login",
+      "featureTitle": "Implement/verify backend-backed first-login initialization so that each new authenticated user receives 200 free coins exactly once, persisted to the user record, and the coin balance is immediately reflected in the authenticated UI after login.",
+      "files": [
+        "frontend/src/components/AuthenticatedLayout.tsx",
+        "frontend/src/pages/DashboardScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

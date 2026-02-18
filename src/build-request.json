@@ -1,0 +1,82 @@
+{
+  "kind": "build_request",
+  "title": "Start build: Home-page Internet Identity login gate + first-login coin grant",
+  "projectName": "Wrapper AI",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Ensure the app enforces a home-page authentication gate using Internet Identity: when the user is not authenticated, the app must render only the Login screen and must not allow access to any other screens (Dashboard and all AI tools) until the user signs in.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-usr-1",
+          "msg-usr-2"
+        ],
+        "quotes": [
+          "Home page par",
+          "Build start karo"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When not signed in, the only visible screen is the Login screen (no navigation to Dashboard/tools is possible).",
+        "After successful Internet Identity login, the user is taken into the authenticated app layout and can navigate to Dashboard and tools.",
+        "Auth loading state is shown while the identity is initializing, then correctly resolves to Login or Authenticated layout."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Update the Login screen user-facing copy to be fully in English and to accurately reflect the currently-supported authentication method (Internet Identity only), without mentioning email/password, Google OAuth, or Apple Sign-In as available options.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-usr-3"
+        ],
+        "quotes": [
+          "Use English for any user-facing text in the build request."
+        ]
+      },
+      "acceptanceCriteria": [
+        "All visible text on the Login screen is in English.",
+        "The Login screen does not claim that email/password login, Google login, or Apple login is available.",
+        "The primary CTA remains a single “Sign in with Internet Identity” action."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement/verify backend-backed first-login initialization so that each new authenticated user receives 200 free coins exactly once, persisted to the user record, and the coin balance is immediately reflected in the authenticated UI after login.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-usr-4"
+        ],
+        "quotes": [
+          "On first login, give 200 free coins",
+          "Store coin balance in user database",
+          "Show remaining coins in dashboard"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A brand-new user (new Principal) sees a coin balance of 200 after first login.",
+        "Logging out and logging back in does not re-grant the 200 coins.",
+        "Coin balance shown in the authenticated header/dashboard matches the backend-stored value."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
+    "Do not modify read-only frontend paths listed as immutable in SYSTEM_CONTEXT (compose existing UI components instead).",
+    "Use English for all user-facing text changes included in this build request.",
+    "Do not add email-based authentication flows unless the platform email feature is enabled on the user’s account."
+  ],
+  "nonGoals": [
+    "Email/password sign-up, email verification, and password reset via email.",
+    "Google OAuth popup login and secure token handling.",
+    "Sign in with Apple / Apple ID OAuth.",
+    "JWT/bcrypt/rate-limiting/HTTPS configuration beyond what is inherently provided by the Internet Computer + Internet Identity for this app."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

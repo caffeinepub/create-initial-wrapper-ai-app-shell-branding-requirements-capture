@@ -1,0 +1,85 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Internet Identity login gate + first-login coin grant (frontend)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Enforce a strict home-page authentication gate so unauthenticated users can only see the Login screen until Internet Identity sign-in completes.",
+      "acceptanceCriteria": [
+        "When not signed in, the only visible screen is the Login screen (no navigation to Dashboard/tools is possible).",
+        "After successful Internet Identity login, the user is taken into the authenticated app layout and can navigate to Dashboard and tools.",
+        "Auth loading state is shown while the identity is initializing, then correctly resolves to Login or Authenticated layout."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Remove duplicate QueryClientProvider/InternetIdentityProvider wrapping so the app has a single source of truth for auth initialization and loading state; ensure rendering delegates to frontend/src/App.tsx for provider setup."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Ensure the React Query client is the single shared instance and remains stable across renders; keep InternetIdentityProvider wrapping AppContent to support the home-page auth gate per the authorization component frontend guidance (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/components/AppContent.tsx",
+          "operation": "modify",
+          "description": "Harden the auth gate behavior: keep the initializing loading UI, and ensure that when identity is absent the app renders only LoginScreen with no authenticated layout mounted; align state naming/logic with Internet Identity initialization from useInternetIdentity (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/hooks/useInternetIdentity.ts",
+          "operation": "modify",
+          "description": "Verify initialization/login state transitions cleanly represent: initializing → resolved (login or not) without UI flashes; ensure errors remain contained to the login experience and do not mount authenticated UI while identity is undefined (Verify the component's usage instructions before implementing.)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Update Login screen copy to be fully English and accurately describe Internet Identity as the only supported authentication method.",
+      "acceptanceCriteria": [
+        "All visible text on the Login screen is in English.",
+        "The Login screen does not claim that email/password login, Google login, or Apple login is available.",
+        "The primary CTA remains a single “Sign in with Internet Identity” action."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/LoginScreen.tsx",
+          "operation": "modify",
+          "description": "Audit and adjust all user-facing strings to be English-only and Internet Identity-only; ensure CTA label remains exactly “Sign in with Internet Identity” and remove/avoid any mention of other auth methods; keep using shadcn-ui Card/Button for consistent UI (Verify the component's usage instructions before implementing.)"
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Trigger/reflect backend-backed first-login coin initialization in the UI so new users see 200 coins once and the balance updates immediately after login.",
+      "acceptanceCriteria": [
+        "A brand-new user (new Principal) sees a coin balance of 200 after first login.",
+        "Logging out and logging back in does not re-grant the 200 coins.",
+        "Coin balance shown in the authenticated header/dashboard matches the backend-stored value."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useCoinBalance.ts",
+          "operation": "modify",
+          "description": "Ensure coin balance fetch runs immediately once an authenticated actor is available (react-query enabled gating) and correctly handles bigint-to-number conversion and loading states so the post-login coin grant is reflected as soon as backend returns it."
+        },
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "On identity change (login/logout), ensure dependent queries are invalidated/refetched in a way that guarantees coin balance refresh right after login; ensure logout transitions do not retain authenticated cached coin data."
+        },
+        {
+          "path": "frontend/src/components/AuthenticatedLayout.tsx",
+          "operation": "modify",
+          "description": "Adjust the coin balance header display to show a clear loading/placeholder state until the first authenticated coin balance fetch resolves, then display the resolved balance; keep using existing shadcn-ui/Button patterns where applicable (Verify the component's usage instructions before implementing.)"
+        },
+        {
+          "path": "frontend/src/pages/DashboardScreen.tsx",
+          "operation": "modify",
+          "description": "Ensure the dashboard coin balance card reflects the same post-login coin balance state as the header (loading then resolved) and avoids stale values after relogin by relying on the shared coin balance query."
+        }
+      ]
+    }
+  ]
+}

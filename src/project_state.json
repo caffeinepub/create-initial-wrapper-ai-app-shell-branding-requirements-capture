@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Wrapper AI app with branded shell, requirements capture, coin-based access control across all AI features (standard cost per feature), and a full authentication system plan (email/password + verification/reset, Google, Apple) with a home-page login gate; email-based auth depends on enabling the platform email feature.",
+  "architectural_notes": [
+    "All AI features use a standard cost of 20 coins per use.",
+    "Users receive 200 free coins on first login; coin balance is stored per user and shown in the dashboard.",
+    "App should block AI tool usage when coin balance is 0; dashboard/routes require authentication."
+  ],
+  "known_issues": [
+    "Email-based auth flows (email verification, password reset, email/password login) are blocked until the platform email feature is enabled on the account."
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-ensure-the-app-enforces-a-home-page-authentication-gate-using-internet-identity-when-the-user-is-not-authenticated-the-app-must-render-only-the-login-screen-and-must-not-allow-access-to-any-other-screens-dashboard-and-all-ai-tools-until-the-user-signs-in",
+      "title": "Ensure the app enforces a home-page authentication gate using Internet Identity: when the user is not authenticated, the app must render only the Login screen and must not allow access to any other screens (Dashboard and all AI tools) until the user signs in.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-login-screen-user-facing-copy-to-be-fully-in-english-and-to-accurately-reflect-the-currently-supported-authentication-method-internet-identity-only-without-mentioning-email-password-google-oauth-or-apple-sign-in-as-available-options",
+      "title": "Update the Login screen user-facing copy to be fully in English and to accurately reflect the currently-supported authentication method (Internet Identity only), without mentioning email/password, Google OAuth, or Apple Sign-In as available options.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-verify-backend-backed-first-login-initialization-so-that-each-new-authenticated-user-receives-200-free-coins-exactly-once-persisted-to-the-user-record-and-the-coin-balance-is-immediately-reflected-in-the-authenticated-ui-after-login",
+      "title": "Implement/verify backend-backed first-login initialization so that each new authenticated user receives 200 free coins exactly once, persisted to the user record, and the coin balance is immediately reflected in the authenticated UI after login.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Create initial Wrapper AI app shell (branding + requirements capture)",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Implement coin-based system across all app features (block usage when coins=0; show balance in dashboard)",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Set coin cost to a standard 20 coins for every feature",
+      "reqIds": [],
+      "status": "in_progress"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Grant 200 free coins on first login and store coin balance in user database",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add complete authentication system: email/password signup/login, email verification, forgot-password reset via email, Google OAuth, Apple Sign-In, secure sessions/JWT, rate limiting, bcrypt, HTTPS",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add home-page login screen/gate (login required before accessing tools; login options discussed: Email and/or Google/Internet Identity)",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Wrapper AI",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

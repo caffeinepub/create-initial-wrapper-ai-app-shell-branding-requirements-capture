@@ -1,0 +1,74 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-18T03:38:46.541Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 3,
+    "implemented": 3,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Ensure the app enforces a home-page authentication gate using Internet Identity: when the user is not authenticated, the app must render only the Login screen and must not allow access to any other screens (Dashboard and all AI tools) until the user signs in.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/main.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/components/AppContent.tsx",
+          "frontend/src/hooks/useInternetIdentity.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Update the Login screen user-facing copy to be fully in English and to accurately reflect the currently-supported authentication method (Internet Identity only), without mentioning email/password, Google OAuth, or Apple Sign-In as available options.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/LoginScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/LoginScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Implement/verify backend-backed first-login initialization so that each new authenticated user receives 200 free coins exactly once, persisted to the user record, and the coin balance is immediately reflected in the authenticated UI after login.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useCoinBalance.ts",
+          "frontend/src/hooks/useActor.ts",
+          "frontend/src/components/AuthenticatedLayout.tsx",
+          "frontend/src/pages/DashboardScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/AuthenticatedLayout.tsx",
+          "frontend/src/pages/DashboardScreen.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/AuthenticatedLayout.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/pages/DashboardScreen.tsx",
+    "frontend/src/pages/LoginScreen.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
