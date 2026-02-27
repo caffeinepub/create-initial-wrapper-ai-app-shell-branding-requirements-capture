@@ -1,247 +1,101 @@
 {
   "kind": "build_request",
-  "title": "Add AI Image Generator with Coin System",
-  "projectName": "AI Image Generator",
-  "priority": "normal",
+  "title": "Fix Groq API Key integration and error handling in AI Chat",
+  "projectName": "Wrapper AI",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add a new AIImageGeneratorScreen component with a single-input interface consisting of one text input box with placeholder 'Enter your idea...' and a 'Generate Image' button",
+      "text": "Fix the Groq API integration in `frontend/src/hooks/useChat.ts` so that when a user enters a valid API key in the app, it is correctly read, stored, and passed as the Authorization header in all Groq API requests (e.g., `Authorization: Bearer <key>`). Ensure no extra whitespace or formatting issues corrupt the key value.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-1",
-          "msg-5",
-          "msg-9"
+          "msg-2",
+          "msg-3"
         ],
         "quotes": [
-          "Simple One-Click Interface: Single input box ('Enter your idea...') + 'Generate Image' button"
+          "First message sa he",
+          "Yes",
+          "Groq API Key integration को properly fix करना"
         ]
       },
       "acceptanceCriteria": [
-        "Screen includes one text input field with placeholder 'Enter your idea...'",
-        "Screen includes a clearly labeled 'Generate Image' button",
-        "Input and button are styled consistently with existing app design",
-        "Layout is clean and minimal"
+        "Entering a valid Groq API key in the app and sending the first message does not produce an 'Invalid API Key' or 401 error",
+        "The Authorization header sent to Groq API is correctly formatted as 'Bearer <key>' with no extra spaces",
+        "The API key is trimmed of any leading/trailing whitespace before use"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Implement auto-enhanced prompt system that automatically appends professional settings to user input before generation: 'Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece'",
+      "text": "Update `frontend/.env` to remove or replace the currently hardcoded (and potentially expired/revoked) `VITE_GROQ_API_KEY` value with a placeholder, and ensure the app reads the API key from user input at runtime rather than relying solely on the environment variable.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5",
-          "msg-9"
+          "msg-1",
+          "msg-2"
         ],
         "quotes": [
-          "Auto-Enhanced Prompts: Automatically adds professional settings (4K, cinematic lighting, ultra-detailed, sharp focus, masterpiece)"
+          "Ea new ha",
+          "app में API Key directly enter करने के बाद भी error आ रही है"
         ]
       },
       "acceptanceCriteria": [
-        "User's raw input is enhanced with professional settings before API call",
-        "Enhanced prompt includes: Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece",
-        "Original user input is preserved and visible in the interface",
-        "Enhancement happens automatically without user action"
+        "The hardcoded Groq API key in frontend/.env is replaced with a placeholder or empty value",
+        "The app correctly uses the API key entered by the user in the input field, giving it priority over the environment variable",
+        "If no key is stored, the user is prompted to enter one"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Implement coin-based generation system where each image generation costs 10 coins, with validation to prevent generation when user has insufficient balance",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-9"
-        ],
-        "quotes": [
-          "Coin System: Users start with 50 free coins, 10 coins per generation"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each image generation deducts exactly 10 coins from user balance",
-        "Generate button is disabled when user has fewer than 10 coins",
-        "Coin balance check happens before generation request",
-        "Coin balance updates immediately after successful generation"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Initialize new users with 50 free coins in their account when they first authenticate via Internet Identity",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-9"
-        ],
-        "quotes": [
-          "Users start with 50 free coins"
-        ]
-      },
-      "acceptanceCriteria": [
-        "New users receive exactly 50 coins upon first login",
-        "Coin balance is persisted in backend state",
-        "Existing users retain their current coin balance"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Display loading animation with appropriate messaging while image generation is in progress",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-9"
-        ],
-        "quotes": [
-          "Loading Animation: Shows while generating"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Loading animation appears immediately when Generate button is clicked",
-        "Loading state disables the Generate button to prevent duplicate requests",
-        "Loading animation includes visual indicator (spinner or progress bar)",
-        "Loading message communicates that image is being generated"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Display generated image in the interface with a download button that triggers browser download of the image file",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-9"
-        ],
-        "quotes": [
-          "Image Display & Download: Generated image with download button"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Generated image displays clearly in the interface after generation completes",
-        "Download button appears below or adjacent to the generated image",
-        "Clicking download button triggers browser download with appropriate filename",
-        "Image maintains aspect ratio and quality in display"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Display 'Please recharge to generate more images' message when user's coin balance reaches 0 coins",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-9"
-        ],
-        "quotes": [
-          "Recharge Message: 'Please recharge to generate more images' when coins = 0"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Message displays prominently when coin balance is exactly 0",
-        "Message text reads: 'Please recharge to generate more images'",
-        "Generate button is disabled when this message is shown",
-        "Message styling is clear and noticeable"
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Structure frontend code to call external AI image generation API with user's enhanced prompt, configurable to accept API endpoint URL and authentication credentials as constants",
+      "text": "Improve error handling in the chat feature (`frontend/src/hooks/useChat.ts` and `frontend/src/pages/AIChatScreen.tsx`) to display clear, actionable error messages when the Groq API returns authentication errors (401), rate limit errors (429), or network failures. Show distinct messages for 'Invalid API Key', 'Rate limit exceeded', and 'Network error'.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-2",
-          "msg-9",
-          "msg-10"
+          "msg-3"
         ],
         "quotes": [
-          "External API Integration: Frontend will call your AI image generation service (Stability AI, Replicate, Hugging Face, etc.)",
-          "you'll add API endpoint and authentication credentials for your chosen AI image generation service"
+          "Error handling को बेहतर बनाना ताकि सही error message दिखे",
+          "API Key validation को improve करना"
         ]
       },
       "acceptanceCriteria": [
-        "Code includes clearly documented constants for API endpoint URL and authentication key",
-        "API call sends enhanced prompt to the configured endpoint",
-        "API call uses proper authentication headers",
-        "Code includes error handling for failed API requests",
-        "Implementation works with REST-based AI image generation APIs (Stability AI, Replicate, Hugging Face compatible)"
+        "When the Groq API returns a 401 error, the UI shows a message like 'Invalid API Key. Please check your key and try again.'",
+        "When the API returns a 429 error, the UI shows a rate limit message",
+        "Network errors are caught and shown to the user with a friendly message",
+        "Errors are displayed inline in the chat UI, not just in the console"
       ]
     },
     {
-      "id": "REQ-9",
-      "text": "Ensure AI Image Generator screen is fully responsive and mobile-friendly with clean, minimal design aesthetic consistent with existing app styling",
+      "id": "REQ-4",
+      "text": "Add client-side validation for the Groq API key input field: validate that the key starts with 'gsk_' and has a minimum length before allowing the user to save it. Show an inline validation error if the format is incorrect.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-5",
-          "msg-9"
+          "msg-2",
+          "msg-3"
         ],
         "quotes": [
-          "Clean, Minimal, Mobile-Friendly UI",
-          "Mobile-Friendly UI: Clean, minimal design that works on all devices"
+          "API Key validation को improve करना"
         ]
       },
       "acceptanceCriteria": [
-        "Interface adapts properly to mobile screen sizes (320px and above)",
-        "Touch targets are appropriately sized for mobile interaction",
-        "Layout uses Tailwind CSS consistent with existing screens",
-        "Design is clean and minimal without unnecessary visual clutter"
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Integrate AI Image Generator with existing Internet Identity authentication system to ensure only authenticated users can access generation features",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-9"
-        ],
-        "quotes": [
-          "Internet Identity Authentication: Integrated user login"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Image generator screen requires active Internet Identity session",
-        "Unauthenticated users are redirected to login",
-        "User's principal ID is used to track coin balance",
-        "Integration uses existing useInternetIdentity hook"
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "text": "Add navigation route and menu item for AI Image Generator screen in the authenticated layout",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-5",
-          "msg-9"
-        ]
-      },
-      "acceptanceCriteria": [
-        "New route 'ai-image-generator' added to hash routing system",
-        "Menu item for AI Image Generator appears in navigation menu",
-        "Menu item includes appropriate icon",
-        "Route properly renders AIImageGeneratorScreen component"
+        "The API key input field validates that the value starts with 'gsk_'",
+        "If the key format is invalid, an inline error message is shown before allowing submission",
+        "A valid key passes validation and is saved without error"
       ]
     }
   ],
   "constraints": [
-    "Use existing coin system infrastructure (useCoinBalance, coin deduction patterns)",
-    "Maintain single-actor backend architecture with all logic in backend/main.mo",
-    "Do not modify immutable frontend paths: useInternetIdentity hooks, useActor.ts, main.tsx, or frontend/src/components/ui",
-    "Use React, Tailwind CSS, and React Query as specified in system stack",
-    "API integration must use frontend REST calls, not backend Motoko HTTP outcalls",
-    "Follow existing patterns from AIImageGeneratorScreen.tsx and useAIImageGenerator.ts hooks for structure"
+    "Do not log or expose the Groq API key in the browser console or any UI element",
+    "Do not share or hardcode any real API key in source files",
+    "Preserve existing coin-deduction logic in useChat.ts"
   ],
   "nonGoals": [
-    "Implementing actual payment integration for coin recharge (message only)",
-    "Building admin panel for manual coin management",
-    "Including multiple API provider options in the UI",
-    "Adding image editing or post-processing features",
-    "Implementing image history or gallery features",
-    "Creating complex prompt engineering UI beyond auto-enhancement",
-    "Adding social sharing capabilities"
+    "Changing the UI language to Hindi",
+    "Replacing Groq with another AI provider",
+    "Modifying backend Motoko code"
   ],
   "imageRequirements": {
     "required": [],

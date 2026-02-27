@@ -13,10 +13,10 @@ export interface VideoRequest {
     requirements: ContentRequest;
     videoTitle: string;
 }
-export interface SubtitleRequest {
-    script: string;
-    language: Language;
-    style: SubtitleStyle;
+export interface TransformationOutput {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
 }
 export interface SeoPackResponse {
     titles: Array<string>;
@@ -36,9 +36,6 @@ export interface ImageGenerationParams {
     prompt: string;
     negativePrompt: string;
 }
-export interface AnimationPlan {
-    steps: Array<string>;
-}
 export interface VoiceoverRequest {
     emotion: Emotion;
     script: string;
@@ -46,12 +43,60 @@ export interface VoiceoverRequest {
     speed: VoiceSpeed;
     voiceGender: VoiceGender;
 }
+export interface VideoResponse {
+    animationPlan: AnimationPlan;
+    script: string;
+    storyboard: Storyboard;
+    exportPlan: ExportPlan;
+    subtitles: Array<string>;
+}
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
+}
+export type StripeSessionStatus = {
+    __kind__: "completed";
+    completed: {
+        userPrincipal?: string;
+        response: string;
+    };
+} | {
+    __kind__: "failed";
+    failed: {
+        error: string;
+    };
+};
+export interface StripeConfiguration {
+    allowedCountries: Array<string>;
+    secretKey: string;
+}
+export interface SubtitleRequest {
+    script: string;
+    language: Language;
+    style: SubtitleStyle;
+}
+export interface CoinPurchasePlan {
+    id: bigint;
+    coinAmount: bigint;
+    name: string;
+    stripePriceId?: string;
+    currencyCode: string;
+    price: string;
+}
 export interface Storyboard {
     scenes: Array<string>;
 }
-export interface SeoPackRequest {
-    mainTopic: string;
-    videoTitle: string;
+export interface AnimationPlan {
+    steps: Array<string>;
+}
+export interface http_header {
+    value: string;
+    name: string;
+}
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
 }
 export interface TransactionRecord {
     principal: Principal;
@@ -61,12 +106,9 @@ export interface TransactionRecord {
     balanceAfter: bigint;
     amount: bigint;
 }
-export interface VideoResponse {
-    animationPlan: AnimationPlan;
-    script: string;
-    storyboard: Storyboard;
-    exportPlan: ExportPlan;
-    subtitles: Array<string>;
+export interface SeoPackRequest {
+    mainTopic: string;
+    videoTitle: string;
 }
 export interface ExportPlan {
     outputDestination: string;
@@ -77,12 +119,12 @@ export interface ExportPlan {
     exportFormat: string;
     qualityLevel: string;
 }
-export interface ColdEmailResponse {
-    finalOutput: string;
-    subjectLines: Array<string>;
-    mainEmail: string;
-    followUp1: string;
-    followUp2: string;
+export interface ShoppingItem {
+    productName: string;
+    currency: string;
+    quantity: bigint;
+    priceInCents: bigint;
+    productDescription: string;
 }
 export interface ContentRequest {
     includeSubtitles: boolean;
@@ -92,11 +134,12 @@ export interface ContentRequest {
     autoTranslateSubtitles: boolean;
     subtitleLanguage: Language;
 }
-export interface CoinPurchasePlan {
-    id: bigint;
-    coinAmount: bigint;
-    name: string;
-    price: string;
+export interface ColdEmailResponse {
+    finalOutput: string;
+    subjectLines: Array<string>;
+    mainEmail: string;
+    followUp1: string;
+    followUp2: string;
 }
 export interface Message {
     height?: bigint;
@@ -169,9 +212,11 @@ export enum VoiceSpeed {
     slow = "slow"
 }
 export interface backendInterface {
+    adminAddCoins(user: Principal, coins: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     chargeFeatureUsage(featureName: string): Promise<void>;
     clearChatHistory(): Promise<void>;
+    createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     generateColdEmail(request: ColdEmailRequest): Promise<ColdEmailResponse>;
     generateSeoPack(request: SeoPackRequest): Promise<SeoPackResponse>;
     generateSubtitles(request: SubtitleRequest): Promise<string>;
@@ -186,12 +231,17 @@ export interface backendInterface {
     getCoinBalance(): Promise<bigint>;
     getCurrentTime(): Promise<bigint>;
     getImageGenerationParams(user: Principal): Promise<Array<ImageGenerationParams> | null>;
+    getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getTransactionHistory(): Promise<Array<TransactionRecord>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    isStripeConfigured(): Promise<boolean>;
     listCoinPurchasePlans(): Promise<Array<CoinPurchasePlan>>;
     processChatMessage(userMessage: Message): Promise<Array<Message>>;
     purchaseCoins(planId: bigint): Promise<bigint>;
+    purchaseCoinsWithStripe(stripeSessionId: string, planId: bigint): Promise<bigint>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     submitImageGenerationParams(params: ImageGenerationParams): Promise<void>;
+    transform(input: TransformationInput): Promise<TransformationOutput>;
 }

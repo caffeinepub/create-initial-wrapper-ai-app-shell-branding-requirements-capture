@@ -17,6 +17,8 @@ export interface CoinPurchasePlan {
   'id' : bigint,
   'coinAmount' : bigint,
   'name' : string,
+  'stripePriceId' : [] | [string],
+  'currencyCode' : string,
   'price' : string,
 }
 export interface ColdEmailRequest {
@@ -95,7 +97,22 @@ export interface SeoPackResponse {
   'description' : string,
   'chapters' : Array<string>,
 }
+export interface ShoppingItem {
+  'productName' : string,
+  'currency' : string,
+  'quantity' : bigint,
+  'priceInCents' : bigint,
+  'productDescription' : string,
+}
 export interface Storyboard { 'scenes' : Array<string> }
+export interface StripeConfiguration {
+  'allowedCountries' : Array<string>,
+  'secretKey' : string,
+}
+export type StripeSessionStatus = {
+    'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
+  } |
+  { 'failed' : { 'error' : string } };
 export interface SubtitleRequest {
   'script' : string,
   'language' : Language,
@@ -115,6 +132,15 @@ export interface TransactionRecord {
 export type TransactionType = { 'credit' : null } |
   { 'featureUsage' : null } |
   { 'debit' : null };
+export interface TransformationInput {
+  'context' : Uint8Array,
+  'response' : http_request_result,
+}
+export interface TransformationOutput {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export interface UserProfile {
   'principal' : Principal,
   'displayName' : string,
@@ -148,11 +174,22 @@ export interface VoiceoverRequest {
   'speed' : VoiceSpeed,
   'voiceGender' : VoiceGender,
 }
+export interface http_header { 'value' : string, 'name' : string }
+export interface http_request_result {
+  'status' : bigint,
+  'body' : Uint8Array,
+  'headers' : Array<http_header>,
+}
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'adminAddCoins' : ActorMethod<[Principal, bigint], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'chargeFeatureUsage' : ActorMethod<[string], undefined>,
   'clearChatHistory' : ActorMethod<[], undefined>,
+  'createCheckoutSession' : ActorMethod<
+    [Array<ShoppingItem>, string, string],
+    string
+  >,
   'generateColdEmail' : ActorMethod<[ColdEmailRequest], ColdEmailResponse>,
   'generateSeoPack' : ActorMethod<[SeoPackRequest], SeoPackResponse>,
   'generateSubtitles' : ActorMethod<[SubtitleRequest], string>,
@@ -173,17 +210,22 @@ export interface _SERVICE {
     [Principal],
     [] | [Array<ImageGenerationParams>]
   >,
+  'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'getTransactionHistory' : ActorMethod<[], Array<TransactionRecord>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isStripeConfigured' : ActorMethod<[], boolean>,
   'listCoinPurchasePlans' : ActorMethod<[], Array<CoinPurchasePlan>>,
   'processChatMessage' : ActorMethod<[Message], Array<Message>>,
   'purchaseCoins' : ActorMethod<[bigint], bigint>,
+  'purchaseCoinsWithStripe' : ActorMethod<[string, bigint], bigint>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'submitImageGenerationParams' : ActorMethod<
     [ImageGenerationParams],
     undefined
   >,
+  'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

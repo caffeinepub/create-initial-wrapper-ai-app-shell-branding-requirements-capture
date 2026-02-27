@@ -1,18 +1,16 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-21T03:22:53.378Z",
-  "summary": "The implementation successfully addresses all 11 requirements with appropriate frontend and backend changes. The AIImageGeneratorScreen component is added with proper UI, auto-enhanced prompts, coin-based validation, loading states, image display with download, recharge messaging, API integration structure, responsive design, Internet Identity integration, and navigation routing. All acceptance criteria are met based on the evidence in the diff.",
+  "generatedAt": "2026-02-27T04:52:42.954Z",
+  "summary": "All four requirements are implemented in the diff. REQ-1 is addressed by the resolveGroqApiKey() function in useChat.ts that trims whitespace and correctly formats the Authorization header. REQ-2 is addressed by frontend/.env now containing an empty placeholder for VITE_GROQ_API_KEY and the app prioritizing localStorage keys. REQ-3 is addressed by distinct error handling for 401, 429, and network errors in useChat.ts with inline display in AIChatScreen.tsx. REQ-4 is addressed by the ApiKeySetup component in AIChatScreen.tsx validating 'gsk_' prefix and minimum length with inline error messages.",
   "missing_requirements": [],
   "hallucinated_features": [],
   "confidence": 0.95,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/AuthenticatedLayout.tsx",
-    "frontend/src/constants/coins.ts",
-    "frontend/src/hooks/useAIImageGenerator.ts",
-    "frontend/src/pages/AIImageGeneratorScreen.tsx",
+    "frontend/.env",
+    "frontend/src/hooks/useChat.ts",
+    "frontend/src/pages/AIChatScreen.tsx",
     "project_state.json"
   ]
 }

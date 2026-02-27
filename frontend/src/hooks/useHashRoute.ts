@@ -1,12 +1,37 @@
 import { useState, useEffect } from 'react';
 
-type View = 'dashboard' | 'chat' | 'profile' | 'youtube-script' | 'ai-video-maker' | 'cold-email' | 'ai-image-generator';
+type View =
+  | 'dashboard'
+  | 'chat'
+  | 'profile'
+  | 'youtube-script'
+  | 'ai-video-maker'
+  | 'cold-email'
+  | 'ai-image-generator'
+  | 'payment-success'
+  | 'payment-failure'
+  | 'admin-panel';
+
+export type RouteKey = View;
+
+const VALID_VIEWS: View[] = [
+  'dashboard',
+  'chat',
+  'profile',
+  'youtube-script',
+  'ai-video-maker',
+  'cold-email',
+  'ai-image-generator',
+  'payment-success',
+  'payment-failure',
+  'admin-panel',
+];
 
 export function useHashRoute() {
   const getViewFromHash = (): View => {
     const hash = window.location.hash.slice(1);
-    if (hash === 'chat' || hash === 'profile' || hash === 'youtube-script' || hash === 'ai-video-maker' || hash === 'cold-email' || hash === 'ai-image-generator') {
-      return hash;
+    if (VALID_VIEWS.includes(hash as View)) {
+      return hash as View;
     }
     return 'dashboard';
   };

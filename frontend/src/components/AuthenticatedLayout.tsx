@@ -1,10 +1,10 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useHashRoute } from '../hooks/useHashRoute';
 import { useCoinBalance } from '../hooks/useCoinBalance';
+import { useIsAdmin } from '../hooks/useIsAdmin';
 import { Button } from '@/components/ui/button';
 import { CoinPurchaseDialog } from './CoinPurchaseDialog';
-import { useState } from 'react';
 import {
   Home,
   MessageSquare,
@@ -17,6 +17,7 @@ import {
   Coins,
   Menu,
   X,
+  Shield,
 } from 'lucide-react';
 import DashboardScreen from '../pages/DashboardScreen';
 import AIChatScreen from '../pages/AIChatScreen';
@@ -25,12 +26,16 @@ import YouTubeScriptScreen from '../pages/YouTubeScriptScreen';
 import AIVideoMakerScreen from '../pages/AIVideoMakerScreen';
 import ColdEmailScreen from '../pages/ColdEmailScreen';
 import AIImageGeneratorScreen from '../pages/AIImageGeneratorScreen';
+import PaymentSuccessScreen from '../pages/PaymentSuccessScreen';
+import PaymentFailureScreen from '../pages/PaymentFailureScreen';
+import AdminPanelScreen from '../pages/AdminPanelScreen';
 import { LOW_BALANCE_THRESHOLD } from '../constants/coins';
 
 export default function AuthenticatedLayout() {
   const { clear } = useInternetIdentity();
   const { currentView, navigate } = useHashRoute();
   const { data: coinBalance, isLoading: balanceLoading } = useCoinBalance();
+  const { data: isAdmin } = useIsAdmin();
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -68,6 +73,20 @@ export default function AuthenticatedLayout() {
         return <ColdEmailScreen />;
       case 'ai-image-generator':
         return <AIImageGeneratorScreen />;
+      case 'payment-success':
+        return <PaymentSuccessScreen onNavigate={navigate} />;
+      case 'payment-failure':
+        return (
+          <PaymentFailureScreen
+            onNavigate={navigate}
+            onBuyCoins={() => {
+              navigate('dashboard');
+              setShowPurchaseDialog(true);
+            }}
+          />
+        );
+      case 'admin-panel':
+        return <AdminPanelScreen />;
       default:
         return <DashboardScreen />;
     }
@@ -106,6 +125,17 @@ export default function AuthenticatedLayout() {
                 </Button>
               );
             })}
+            {isAdmin && (
+              <Button
+                variant={currentView === 'admin-panel' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => navigate('admin-panel')}
+                className="gap-2"
+              >
+                <Shield className="h-4 w-4" />
+                <span className="hidden xl:inline">Admin</span>
+              </Button>
+            )}
           </nav>
 
           {/* Right Section */}
@@ -193,6 +223,22 @@ export default function AuthenticatedLayout() {
                   </Button>
                 );
               })}
+
+              {/* Admin Panel (Mobile) */}
+              {isAdmin && (
+                <Button
+                  variant={currentView === 'admin-panel' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => {
+                    navigate('admin-panel');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full justify-start gap-2"
+                >
+                  <Shield className="h-4 w-4" />
+                  Admin Panel
+                </Button>
+              )}
 
               {/* Logout (Mobile) */}
               <Button

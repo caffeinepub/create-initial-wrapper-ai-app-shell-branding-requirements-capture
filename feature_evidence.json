@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-new-aiimagegeneratorscreen-component-with-a-single-input-interface-consisting-of-one-text-input-box-with-placeholder-enter-your-idea-and-a-generate-image-button",
-      "featureTitle": "Add a new AIImageGeneratorScreen component with a single-input interface consisting of one text input box with placeholder 'Enter your idea...' and a 'Generate Image' button",
+      "featureId": "feature-fix-the-groq-api-integration-in-frontend-src-hooks-usechat-ts-so-that-when-a-user-enters-a-valid-api-key-in-the-app-it-is-correctly-read-stored-and-passed-as-the-authorization-header-in-all-groq-api-requests-e-g-authorization-bearer-key-ensure-no-extra-whitespace-or-formatting-issues-corrupt-the-key-value",
+      "featureTitle": "Fix the Groq API integration in `frontend/src/hooks/useChat.ts` so that when a user enters a valid API key in the app, it is correctly read, stored, and passed as the Authorization header in all Groq API requests (e.g., `Authorization: Bearer <key>`). Ensure no extra whitespace or formatting issues corrupt the key value.",
       "files": [
-        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        "frontend/src/hooks/useChat.ts",
+        "frontend/src/pages/AIChatScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -13,7 +14,9 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
         "REQ-1"
@@ -21,10 +24,12 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-auto-enhanced-prompt-system-that-automatically-appends-professional-settings-to-user-input-before-generation-ultra-high-quality-4k-professional-detailed-cinematic-lighting-sharp-focus-masterpiece",
-      "featureTitle": "Implement auto-enhanced prompt system that automatically appends professional settings to user input before generation: 'Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece'",
+      "featureId": "feature-update-frontend-env-to-remove-or-replace-the-currently-hardcoded-and-potentially-expired-revoked-vite-groq-api-key-value-with-a-placeholder-and-ensure-the-app-reads-the-api-key-from-user-input-at-runtime-rather-than-relying-solely-on-the-environment-variable",
+      "featureTitle": "Update `frontend/.env` to remove or replace the currently hardcoded (and potentially expired/revoked) `VITE_GROQ_API_KEY` value with a placeholder, and ensure the app reads the API key from user input at runtime rather than relying solely on the environment variable.",
       "files": [
-        "frontend/src/hooks/useAIImageGenerator.ts"
+        "frontend/.env",
+        "frontend/src/hooks/useChat.ts",
+        "frontend/src/pages/AIChatScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -32,7 +37,9 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
         "REQ-2"
@@ -40,12 +47,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-implement-coin-based-generation-system-where-each-image-generation-costs-10-coins-with-validation-to-prevent-generation-when-user-has-insufficient-balance",
-      "featureTitle": "Implement coin-based generation system where each image generation costs 10 coins, with validation to prevent generation when user has insufficient balance",
+      "featureId": "feature-improve-error-handling-in-the-chat-feature-frontend-src-hooks-usechat-ts-and-frontend-src-pages-aichatscreen-tsx-to-display-clear-actionable-error-messages-when-the-groq-api-returns-authentication-errors-401-rate-limit-errors-429-or-network-failures-show-distinct-messages-for-invalid-api-key-rate-limit-exceeded-and-network-error",
+      "featureTitle": "Improve error handling in the chat feature (`frontend/src/hooks/useChat.ts` and `frontend/src/pages/AIChatScreen.tsx`) to display clear, actionable error messages when the Groq API returns authentication errors (401), rate limit errors (429), or network failures. Show distinct messages for 'Invalid API Key', 'Rate limit exceeded', and 'Network error'.",
       "files": [
-        "frontend/src/constants/coins.ts",
-        "frontend/src/hooks/useAIImageGenerator.ts",
-        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        "frontend/src/hooks/useChat.ts",
+        "frontend/src/pages/AIChatScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -53,7 +59,9 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
         "REQ-3"
@@ -61,10 +69,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-display-loading-animation-with-appropriate-messaging-while-image-generation-is-in-progress",
-      "featureTitle": "Display loading animation with appropriate messaging while image generation is in progress",
+      "featureId": "feature-add-client-side-validation-for-the-groq-api-key-input-field-validate-that-the-key-starts-with-gsk-and-has-a-minimum-length-before-allowing-the-user-to-save-it-show-an-inline-validation-error-if-the-format-is-incorrect",
+      "featureTitle": "Add client-side validation for the Groq API key input field: validate that the key starts with 'gsk_' and has a minimum length before allowing the user to save it. Show an inline validation error if the format is incorrect.",
       "files": [
-        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        "frontend/src/pages/AIChatScreen.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -72,124 +80,12 @@
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
         "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
+        "authorization@4.0.0",
+        "stripe@3.0.0",
+        "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-display-generated-image-in-the-interface-with-a-download-button-that-triggers-browser-download-of-the-image-file",
-      "featureTitle": "Display generated image in the interface with a download button that triggers browser download of the image file",
-      "files": [
-        "frontend/src/pages/AIImageGeneratorScreen.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-display-please-recharge-to-generate-more-images-message-when-user-s-coin-balance-reaches-0-coins",
-      "featureTitle": "Display 'Please recharge to generate more images' message when user's coin balance reaches 0 coins",
-      "files": [
-        "frontend/src/pages/AIImageGeneratorScreen.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-7"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-structure-frontend-code-to-call-external-ai-image-generation-api-with-user-s-enhanced-prompt-configurable-to-accept-api-endpoint-url-and-authentication-credentials-as-constants",
-      "featureTitle": "Structure frontend code to call external AI image generation API with user's enhanced prompt, configurable to accept API endpoint URL and authentication credentials as constants",
-      "files": [
-        "frontend/src/hooks/useAIImageGenerator.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-8"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-ai-image-generator-screen-is-fully-responsive-and-mobile-friendly-with-clean-minimal-design-aesthetic-consistent-with-existing-app-styling",
-      "featureTitle": "Ensure AI Image Generator screen is fully responsive and mobile-friendly with clean, minimal design aesthetic consistent with existing app styling",
-      "files": [
-        "frontend/src/pages/AIImageGeneratorScreen.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-9"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-integrate-ai-image-generator-with-existing-internet-identity-authentication-system-to-ensure-only-authenticated-users-can-access-generation-features",
-      "featureTitle": "Integrate AI Image Generator with existing Internet Identity authentication system to ensure only authenticated users can access generation features",
-      "files": [
-        "frontend/src/pages/AIImageGeneratorScreen.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-10"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-navigation-route-and-menu-item-for-ai-image-generator-screen-in-the-authenticated-layout",
-      "featureTitle": "Add navigation route and menu item for AI Image Generator screen in the authenticated layout",
-      "files": [
-        "frontend/src/components/AuthenticatedLayout.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-11"
+        "REQ-4"
       ],
       "confidence": "high"
     }

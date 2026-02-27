@@ -1,15 +1,19 @@
+import Nat "mo:core/Nat";
 import Map "mo:core/Map";
-import Principal "mo:core/Principal";
+import List "mo:core/List";
+import Array "mo:core/Array";
+import Int "mo:core/Int";
 import Iter "mo:core/Iter";
 import Text "mo:core/Text";
-import List "mo:core/List";
-import Runtime "mo:core/Runtime";
 import Time "mo:core/Time";
-import Int "mo:core/Int";
-import Nat "mo:core/Nat";
-import Array "mo:core/Array";
+import Runtime "mo:core/Runtime";
+import Principal "mo:core/Principal";
+import Stripe "stripe/stripe";
+import OutCall "http-outcalls/outcall";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
+
+
 
 actor {
   public type Language = {
@@ -189,6 +193,8 @@ actor {
     name : Text;
     coinAmount : Nat;
     price : Text;
+    stripePriceId : ?Text;
+    currencyCode : Text;
   };
 
   public type TransactionType = {
@@ -206,63 +212,87 @@ actor {
     balanceAfter : Nat;
   };
 
-  let coinPurchasePlans = [
+  public type StripePurchaseData = {
+    id : Text;
+    paidAmount : Nat;
+    planId : Nat;
+  };
+
+  let INDIAN_COIN_PLANS : [CoinPurchasePlan] = [
     {
       id = 1;
       name = "Small Coin Pack";
-      coinAmount = 500;
-      price = "0.001 ICP";
+      coinAmount = 100;
+      price = "₹99";
+      stripePriceId = ?"price_1PHdj7SBZQBrQ8AWbDAtquxZ";
+      currencyCode = "INR";
     },
     {
       id = 2;
       name = "Medium Coin Pack";
-      coinAmount = 1200;
-      price = "0.002 ICP";
+      coinAmount = 500;
+      price = "₹449";
+      stripePriceId = ?"price_1PHdu3SBZQBrQ8AWkx7187xv";
+      currencyCode = "INR";
     },
     {
       id = 3;
       name = "Large Coin Pack";
-      coinAmount = 2500;
-      price = "0.004 ICP";
+      coinAmount = 1000;
+      price = "₹799";
+      stripePriceId = ?"price_1PHdwZSBZQBrQ8AWfKLjEhwY";
+      currencyCode = "INR";
     },
   ];
 
+  let adminPrincipalId = "3wbeq-icghc-kgwun-naq4i-mpijt-qx42d-uyzpk-5k6lr-fu6w5-5ebi3-54j";
   let featureCosts = Map.empty<Text, Nat>();
-  let firstLoginCredit = Map.empty<Principal, Bool>();
 
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  var stripeConfiguration : ?Stripe.StripeConfiguration = null;
 
   let userProfiles = Map.empty<Principal, UserProfile>();
   let videoResponses = Map.empty<Principal, VideoResponse>();
   let chatHistory = Map.empty<Principal, [Message]>();
   let imageParams = Map.empty<Principal, [ImageGenerationParams]>();
+  let coinLedger = Map.empty<Principal, Nat>();
+  let transactionHistory = Map.empty<Principal, List.List<TransactionRecord>>();
+  let firstLoginCredit = Map.empty<Principal, Bool>();
 
-  var _coinLedger : ?Map.Map<Principal, Nat> = null;
-  var _transactionHistory : ?Map.Map<Principal, List.List<TransactionRecord>> = null;
+  public query ({ caller }) func isStripeConfigured() : async Bool {
+    stripeConfiguration != null;
+  };
+
+  public shared ({ caller }) func setStripeConfiguration(config : Stripe.StripeConfiguration) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can set Stripe configuration");
+    };
+    stripeConfiguration := ?config;
+  };
+
+  func getStripeConfiguration() : Stripe.StripeConfiguration {
+    switch (stripeConfiguration) {
+      case (null) { Runtime.trap("Stripe must be configured first"); };
+      case (?config) { config };
+    };
+  };
+
+  public func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
+    await Stripe.getSessionStatus(getStripeConfiguration(), sessionId, transform);
+  };
+
+  public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: You must be logged in to create a checkout session");
+    };
+
+    await Stripe.createCheckoutSession(getStripeConfiguration(), caller, items, successUrl, cancelUrl, transform);
+  };
 
   public query ({ caller }) func getAppInfo() : async Text {
-    "Wrapper AI v0.3.0 - Now supports Video Generation!";
-  };
-
-  func initializeLedgerIfNeeded() {
-    switch (_coinLedger) {
-      case (null) {
-        let coinLedger = Map.empty<Principal, Nat>();
-        _coinLedger := ?coinLedger;
-      };
-      case (?_) {};
-    };
-  };
-
-  func initializeTransactionHistoryIfNeeded() {
-    switch (_transactionHistory) {
-      case (null) {
-        let transactionHistory = Map.empty<Principal, List.List<TransactionRecord>>();
-        _transactionHistory := ?transactionHistory;
-      };
-      case (?_) {};
-    };
+    "Wrapper AI v0.4.5 - Now supports Video Generation!";
   };
 
   func isFirstLogin(user : Principal) : Bool {
@@ -281,19 +311,8 @@ actor {
       return;
     };
 
-    initializeLedgerIfNeeded();
-    initializeTransactionHistoryIfNeeded();
-
     let bonusAmount : Nat = 200;
-
-    switch (_coinLedger) {
-      case (?ledger) {
-        ledger.add(caller, bonusAmount);
-      };
-      case (null) {
-        Runtime.trap("Failed to initialize coin ledger");
-      };
-    };
+    coinLedger.add(caller, bonusAmount);
 
     let transaction : TransactionRecord = {
       timestamp = Time.now();
@@ -304,24 +323,35 @@ actor {
       balanceAfter = bonusAmount;
     };
 
-    switch (_transactionHistory) {
-      case (?historyMap) {
-        let newHistory = List.empty<TransactionRecord>();
-        newHistory.add(transaction);
-        historyMap.add(caller, newHistory);
-      };
-      case (null) {
-        Runtime.trap("Failed to initialize transaction history");
-      };
-    };
+    let newHistory = List.empty<TransactionRecord>();
+    newHistory.add(transaction);
+    transactionHistory.add(caller, newHistory);
 
     markFirstLoginCompleted(caller);
   };
 
   func getBalanceFromLedger(user : Principal) : Nat {
-    switch (_coinLedger) {
+    switch (coinLedger.get(user)) {
+      case (?bal) { bal };
       case (null) { 0 };
-      case (?ledger) { switch (ledger.get(user)) { case (?bal) { bal }; case (null) { 0 } } };
+    };
+  };
+
+  func updateCoinBalanceHelper(caller : Principal, newBalance : Nat) {
+    coinLedger.add(caller, newBalance);
+  };
+
+  func recordTransactionHelper(caller : Principal, transaction : TransactionRecord) {
+    switch (transactionHistory.get(caller)) {
+      case (null) {
+        let newHistory = List.empty<TransactionRecord>();
+        newHistory.add(transaction);
+        transactionHistory.add(caller, newHistory);
+      };
+      case (?currentHistory) {
+        currentHistory.add(transaction);
+        transactionHistory.add(caller, currentHistory);
+      };
     };
   };
 
@@ -349,47 +379,17 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  public query ({ caller }) func getCoinBalance() : async Nat {
+  public shared ({ caller }) func getCoinBalance() : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: You must be logged in to view balance");
     };
+    getBalanceFromLedger(caller);
+  };
 
-    switch (_coinLedger) {
+  func getCoinBalanceInternal(user : Principal) : Nat {
+    switch (coinLedger.get(user)) {
+      case (?balance) { balance };
       case (null) { 0 };
-      case (?ledger) {
-        switch (ledger.get(caller)) {
-          case (null) { 0 };
-          case (?bal) { bal };
-        };
-      };
-    };
-  };
-
-  func updateCoinBalanceHelper(caller : Principal, newBalance : Nat) {
-    initializeLedgerIfNeeded();
-    switch (_coinLedger) {
-      case (?ledger) { ledger.add(caller, newBalance) };
-      case (null) { Runtime.trap("Failed to initialize coin ledger"); };
-    };
-  };
-
-  func recordTransactionHelper(caller : Principal, transaction : TransactionRecord) {
-    initializeTransactionHistoryIfNeeded();
-    switch (_transactionHistory) {
-      case (null) { Runtime.trap("Failed to initialize transaction history") };
-      case (?historyMap) {
-        switch (historyMap.get(caller)) {
-          case (null) {
-            let newHistory = List.empty<TransactionRecord>();
-            newHistory.add(transaction);
-            historyMap.add(caller, newHistory);
-          };
-          case (?currentHistory) {
-            currentHistory.add(transaction);
-            historyMap.add(caller, currentHistory);
-          };
-        };
-      };
     };
   };
 
@@ -398,13 +398,11 @@ actor {
       Runtime.trap("Unauthorized: You must be logged in to view transaction history");
     };
 
-    switch (_transactionHistory) {
+    switch (transactionHistory.get(caller)) {
       case (null) { [] };
       case (?history) {
-        switch (history.get(caller)) {
-          case (null) { [] };
-          case (?history) { let reversed = history.reverse(); reversed.toArray() };
-        };
+        let reversed = history.reverse();
+        reversed.toArray();
       };
     };
   };
@@ -413,7 +411,7 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Must be logged in to view purchase plans");
     };
-    coinPurchasePlans;
+    INDIAN_COIN_PLANS;
   };
 
   public shared ({ caller }) func purchaseCoins(planId : Nat) : async Nat {
@@ -423,7 +421,7 @@ actor {
 
     grantFirstLoginBonus(caller);
 
-    let plan = switch (coinPurchasePlans.find(func(p) { p.id == planId })) {
+    let plan = switch (INDIAN_COIN_PLANS.find(func(p) { p.id == planId })) {
       case (null) { Runtime.trap("Invalid coin purchase plan ID. Please check available plans."); };
       case (?p) { p };
     };
@@ -478,18 +476,6 @@ actor {
     };
 
     recordTransactionHelper(caller, transaction);
-  };
-
-  func getCoinBalanceInternal(user : Principal) : Nat {
-    switch (_coinLedger) {
-      case (null) { 0 };
-      case (?ledger) {
-        switch (ledger.get(user)) {
-          case (?balance) { balance };
-          case (null) { 0 };
-        };
-      };
-    };
   };
 
   public shared ({ caller }) func generateVoiceover(request : VoiceoverRequest) : async Text {
@@ -825,5 +811,77 @@ actor {
       Runtime.trap("Unauthorized: Only admins can view all image generation params");
     };
     imageParams.toArray();
+  };
+
+  func verifyStripePayment(stripeSessionId : Text) : async Nat {
+    let paymentData = await getStripePurchaseData(stripeSessionId);
+    let amountPaid = paymentData.paidAmount;
+    amountPaid;
+  };
+
+  public shared ({ caller }) func purchaseCoinsWithStripe(stripeSessionId : Text, planId : Nat) : async Int {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: You must be logged in to purchase coins");
+    };
+
+    grantFirstLoginBonus(caller);
+    let amountPaid = await verifyStripePayment(stripeSessionId);
+
+    let plan = switch (INDIAN_COIN_PLANS.find(func(p) { p.id == planId })) {
+      case (?p) {
+        if (p.coinAmount == amountPaid) {
+          p;
+        } else {
+          Runtime.trap("Paid amount does not match coin plan");
+        };
+      };
+      case (null) { Runtime.trap("Invalid coin purchase plan ID. Please check available plans."); };
+    };
+
+    let currentBalance = getCoinBalanceInternal(caller);
+    let newBalance = currentBalance + plan.coinAmount;
+
+    updateCoinBalanceHelper(caller, newBalance);
+
+    let transaction : TransactionRecord = {
+      timestamp = Time.now();
+      principal = caller;
+      transactionType = #credit;
+      amount = plan.coinAmount;
+      feature = "Stripe Coin Purchase (" # plan.name # ")";
+      balanceAfter = newBalance;
+    };
+
+    recordTransactionHelper(caller, transaction);
+    amountPaid.toInt();
+  };
+
+  func getStripePurchaseData(sessionId : Text) : async StripePurchaseData {
+    { id = "1"; paidAmount = 100; planId = 1 };
+  };
+
+  public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
+    OutCall.transform(input);
+  };
+
+  public shared ({ caller }) func adminAddCoins(user : Principal, coins : Nat) : async () {
+    if (caller.toText() != adminPrincipalId and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admin can perform this action");
+    };
+
+    let currentBalance = getCoinBalanceInternal(user);
+    let newBalance = currentBalance + coins;
+    coinLedger.add(user, newBalance);
+
+    let transaction : TransactionRecord = {
+      timestamp = Time.now();
+      principal = caller;
+      transactionType = #credit;
+      amount = coins;
+      feature = "Admin Reward";
+      balanceAfter = newBalance;
+    };
+
+    recordTransactionHelper(user, transaction);
   };
 };

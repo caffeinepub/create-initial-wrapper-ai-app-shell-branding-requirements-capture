@@ -8,10 +8,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Coins, Check, Loader2 } from 'lucide-react';
+import { Coins, Check, Loader2, ExternalLink } from 'lucide-react';
 import { useCoinPurchasePlans } from '../hooks/useCoinPurchasePlans';
-import { usePurchaseCoins } from '../hooks/usePurchaseCoins';
+import { useCreateStripeCheckoutSession } from '../hooks/useCreateStripeCheckoutSession';
 import { toast } from 'sonner';
+import type { CoinPurchasePlan } from '../backend';
 
 interface CoinPurchaseDialogProps {
   open: boolean;
@@ -20,7 +21,7 @@ interface CoinPurchaseDialogProps {
 
 export function CoinPurchaseDialog({ open, onOpenChange }: CoinPurchaseDialogProps) {
   const { data: plans, isLoading: plansLoading } = useCoinPurchasePlans();
-  const { mutate: purchaseCoins, isPending: isPurchasing } = usePurchaseCoins();
+  const { mutate: createCheckoutSession, isPending: isRedirecting } = useCreateStripeCheckoutSession();
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
 
   const handlePurchase = () => {
@@ -29,16 +30,31 @@ export function CoinPurchaseDialog({ open, onOpenChange }: CoinPurchaseDialogPro
       return;
     }
 
-    purchaseCoins(selectedPlanId, {
-      onSuccess: (newBalance) => {
-        toast.success(`Purchase successful! Your new balance is ${newBalance} coins.`);
-        onOpenChange(false);
-        setSelectedPlanId(null);
+    const selectedPlan = plans?.find((p) => Number(p.id) === selectedPlanId);
+    if (!selectedPlan) {
+      toast.error('Selected plan not found');
+      return;
+    }
+
+    createCheckoutSession(selectedPlan, {
+      onSuccess: (session) => {
+        toast.success('Redirecting to payment...');
+        // Use window.location.href for Stripe redirect (not router navigation)
+        window.location.href = session.url;
       },
       onError: (error: any) => {
-        toast.error(error?.message || 'Purchase failed. Please try again.');
+        toast.error(error?.message || 'Failed to initiate payment. Please try again.');
       },
     });
+  };
+
+  const getPlanFeatures = (plan: CoinPurchasePlan): string[] => {
+    const coins = Number(plan.coinAmount);
+    const features: string[] = [];
+    if (coins >= 100) features.push(`${Math.floor(coins / 20)} AI Chat messages`);
+    if (coins >= 100) features.push(`${Math.floor(coins / 10)} AI Images`);
+    if (coins >= 500) features.push('Best value pack');
+    return features;
   };
 
   return (
@@ -50,7 +66,7 @@ export function CoinPurchaseDialog({ open, onOpenChange }: CoinPurchaseDialogPro
             Purchase Coins
           </DialogTitle>
           <DialogDescription>
-            Select a coin pack to continue using all features without interruption
+            Select a coin pack to continue using all features. Secure payment via Stripe — supports Cards, UPI, Net Banking & Wallets.
           </DialogDescription>
         </DialogHeader>
 
@@ -63,16 +79,26 @@ export function CoinPurchaseDialog({ open, onOpenChange }: CoinPurchaseDialogPro
             <div className="grid gap-4">
               {plans.map((plan) => {
                 const isSelected = selectedPlanId === Number(plan.id);
+                const features = getPlanFeatures(plan);
+                const isBestValue = Number(plan.coinAmount) === 500;
+
                 return (
                   <Card
                     key={Number(plan.id)}
-                    className={`cursor-pointer transition-all ${
+                    className={`cursor-pointer transition-all relative ${
                       isSelected
                         ? 'border-primary border-2 shadow-md'
                         : 'border-2 hover:border-primary/50'
                     }`}
                     onClick={() => setSelectedPlanId(Number(plan.id))}
                   >
+                    {isBestValue && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                          BEST VALUE
+                        </span>
+                      </div>
+                    )}
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
@@ -81,18 +107,28 @@ export function CoinPurchaseDialog({ open, onOpenChange }: CoinPurchaseDialogPro
                             {Number(plan.coinAmount)} Coins
                           </CardDescription>
                         </div>
-                        {isSelected && (
-                          <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-                            <Check className="h-4 w-4 text-primary-foreground" />
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl font-bold text-primary">{plan.price}</span>
+                          {isSelected && (
+                            <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+                              <Check className="h-4 w-4 text-primary-foreground" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Price: <span className="font-semibold text-foreground">{plan.price}</span>
-                      </p>
-                    </CardContent>
+                    {features.length > 0 && (
+                      <CardContent className="pt-0">
+                        <ul className="space-y-1">
+                          {features.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Check className="h-3 w-3 text-primary shrink-0" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    )}
                   </Card>
                 );
               })}
@@ -107,26 +143,33 @@ export function CoinPurchaseDialog({ open, onOpenChange }: CoinPurchaseDialogPro
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isPurchasing}
+              disabled={isRedirecting}
               className="flex-1"
             >
               Cancel
             </Button>
             <Button
               onClick={handlePurchase}
-              disabled={selectedPlanId === null || isPurchasing}
-              className="flex-1"
+              disabled={selectedPlanId === null || isRedirecting}
+              className="flex-1 gap-2"
             >
-              {isPurchasing ? (
+              {isRedirecting ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Processing...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Redirecting...
                 </>
               ) : (
-                'Purchase Coins'
+                <>
+                  <ExternalLink className="h-4 w-4" />
+                  Pay with Stripe
+                </>
               )}
             </Button>
           </div>
+
+          <p className="text-xs text-center text-muted-foreground">
+            🔒 Secure payment powered by Stripe. Supports Cards, UPI, Net Banking & Wallets.
+          </p>
         </div>
       </DialogContent>
     </Dialog>

@@ -95,10 +95,10 @@ export interface VideoRequest {
     requirements: ContentRequest;
     videoTitle: string;
 }
-export interface SubtitleRequest {
-    script: string;
-    language: Language;
-    style: SubtitleStyle;
+export interface TransformationOutput {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
 }
 export interface SeoPackResponse {
     titles: Array<string>;
@@ -118,9 +118,6 @@ export interface ImageGenerationParams {
     prompt: string;
     negativePrompt: string;
 }
-export interface AnimationPlan {
-    steps: Array<string>;
-}
 export interface VoiceoverRequest {
     emotion: Emotion;
     script: string;
@@ -128,12 +125,60 @@ export interface VoiceoverRequest {
     speed: VoiceSpeed;
     voiceGender: VoiceGender;
 }
+export interface VideoResponse {
+    animationPlan: AnimationPlan;
+    script: string;
+    storyboard: Storyboard;
+    exportPlan: ExportPlan;
+    subtitles: Array<string>;
+}
+export interface TransformationInput {
+    context: Uint8Array;
+    response: http_request_result;
+}
+export type StripeSessionStatus = {
+    __kind__: "completed";
+    completed: {
+        userPrincipal?: string;
+        response: string;
+    };
+} | {
+    __kind__: "failed";
+    failed: {
+        error: string;
+    };
+};
+export interface StripeConfiguration {
+    allowedCountries: Array<string>;
+    secretKey: string;
+}
+export interface SubtitleRequest {
+    script: string;
+    language: Language;
+    style: SubtitleStyle;
+}
+export interface CoinPurchasePlan {
+    id: bigint;
+    coinAmount: bigint;
+    name: string;
+    stripePriceId?: string;
+    currencyCode: string;
+    price: string;
+}
 export interface Storyboard {
     scenes: Array<string>;
 }
-export interface SeoPackRequest {
-    mainTopic: string;
-    videoTitle: string;
+export interface AnimationPlan {
+    steps: Array<string>;
+}
+export interface http_header {
+    value: string;
+    name: string;
+}
+export interface http_request_result {
+    status: bigint;
+    body: Uint8Array;
+    headers: Array<http_header>;
 }
 export interface TransactionRecord {
     principal: Principal;
@@ -143,12 +188,9 @@ export interface TransactionRecord {
     balanceAfter: bigint;
     amount: bigint;
 }
-export interface VideoResponse {
-    animationPlan: AnimationPlan;
-    script: string;
-    storyboard: Storyboard;
-    exportPlan: ExportPlan;
-    subtitles: Array<string>;
+export interface SeoPackRequest {
+    mainTopic: string;
+    videoTitle: string;
 }
 export interface ExportPlan {
     outputDestination: string;
@@ -159,12 +201,12 @@ export interface ExportPlan {
     exportFormat: string;
     qualityLevel: string;
 }
-export interface ColdEmailResponse {
-    finalOutput: string;
-    subjectLines: Array<string>;
-    mainEmail: string;
-    followUp1: string;
-    followUp2: string;
+export interface ShoppingItem {
+    productName: string;
+    currency: string;
+    quantity: bigint;
+    priceInCents: bigint;
+    productDescription: string;
 }
 export interface ContentRequest {
     includeSubtitles: boolean;
@@ -174,11 +216,12 @@ export interface ContentRequest {
     autoTranslateSubtitles: boolean;
     subtitleLanguage: Language;
 }
-export interface CoinPurchasePlan {
-    id: bigint;
-    coinAmount: bigint;
-    name: string;
-    price: string;
+export interface ColdEmailResponse {
+    finalOutput: string;
+    subjectLines: Array<string>;
+    mainEmail: string;
+    followUp1: string;
+    followUp2: string;
 }
 export interface Message {
     height?: bigint;
@@ -252,9 +295,11 @@ export enum VoiceSpeed {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    adminAddCoins(user: Principal, coins: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     chargeFeatureUsage(featureName: string): Promise<void>;
     clearChatHistory(): Promise<void>;
+    createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     generateColdEmail(request: ColdEmailRequest): Promise<ColdEmailResponse>;
     generateSeoPack(request: SeoPackRequest): Promise<SeoPackResponse>;
     generateSubtitles(request: SubtitleRequest): Promise<string>;
@@ -269,16 +314,21 @@ export interface backendInterface {
     getCoinBalance(): Promise<bigint>;
     getCurrentTime(): Promise<bigint>;
     getImageGenerationParams(user: Principal): Promise<Array<ImageGenerationParams> | null>;
+    getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getTransactionHistory(): Promise<Array<TransactionRecord>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    isStripeConfigured(): Promise<boolean>;
     listCoinPurchasePlans(): Promise<Array<CoinPurchasePlan>>;
     processChatMessage(userMessage: Message): Promise<Array<Message>>;
     purchaseCoins(planId: bigint): Promise<bigint>;
+    purchaseCoinsWithStripe(stripeSessionId: string, planId: bigint): Promise<bigint>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     submitImageGenerationParams(params: ImageGenerationParams): Promise<void>;
+    transform(input: TransformationInput): Promise<TransformationOutput>;
 }
-import type { ChatRole as _ChatRole, ContentRequest as _ContentRequest, Emotion as _Emotion, ImageGenerationParams as _ImageGenerationParams, Language as _Language, Message as _Message, SubtitleRequest as _SubtitleRequest, SubtitleStyle as _SubtitleStyle, TransactionRecord as _TransactionRecord, TransactionType as _TransactionType, UserProfile as _UserProfile, UserRole as _UserRole, VideoRequest as _VideoRequest, VoiceGender as _VoiceGender, VoiceSpeed as _VoiceSpeed, VoiceoverRequest as _VoiceoverRequest } from "./declarations/backend.did.d.ts";
+import type { ChatRole as _ChatRole, CoinPurchasePlan as _CoinPurchasePlan, ContentRequest as _ContentRequest, Emotion as _Emotion, ImageGenerationParams as _ImageGenerationParams, Language as _Language, Message as _Message, StripeSessionStatus as _StripeSessionStatus, SubtitleRequest as _SubtitleRequest, SubtitleStyle as _SubtitleStyle, TransactionRecord as _TransactionRecord, TransactionType as _TransactionType, UserProfile as _UserProfile, UserRole as _UserRole, VideoRequest as _VideoRequest, VoiceGender as _VoiceGender, VoiceSpeed as _VoiceSpeed, VoiceoverRequest as _VoiceoverRequest } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -292,6 +342,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor._initializeAccessControlWithSecret(arg0);
+            return result;
+        }
+    }
+    async adminAddCoins(arg0: Principal, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminAddCoins(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminAddCoins(arg0, arg1);
             return result;
         }
     }
@@ -334,6 +398,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.clearChatHistory();
+            return result;
+        }
+    }
+    async createCheckoutSession(arg0: Array<ShoppingItem>, arg1: string, arg2: string): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createCheckoutSession(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createCheckoutSession(arg0, arg1, arg2);
             return result;
         }
     }
@@ -533,18 +611,32 @@ export class Backend implements backendInterface {
             return from_candid_opt_n34(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getStripeSessionStatus(arg0: string): Promise<StripeSessionStatus> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getStripeSessionStatus(arg0);
+                return from_candid_StripeSessionStatus_n35(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getStripeSessionStatus(arg0);
+            return from_candid_StripeSessionStatus_n35(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getTransactionHistory(): Promise<Array<TransactionRecord>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getTransactionHistory();
-                return from_candid_vec_n35(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n39(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getTransactionHistory();
-            return from_candid_vec_n35(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n39(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
@@ -575,31 +667,45 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async listCoinPurchasePlans(): Promise<Array<CoinPurchasePlan>> {
+    async isStripeConfigured(): Promise<boolean> {
         if (this.processError) {
             try {
-                const result = await this.actor.listCoinPurchasePlans();
+                const result = await this.actor.isStripeConfigured();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.listCoinPurchasePlans();
+            const result = await this.actor.isStripeConfigured();
             return result;
+        }
+    }
+    async listCoinPurchasePlans(): Promise<Array<CoinPurchasePlan>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listCoinPurchasePlans();
+                return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listCoinPurchasePlans();
+            return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
         }
     }
     async processChatMessage(arg0: Message): Promise<Array<Message>> {
         if (this.processError) {
             try {
-                const result = await this.actor.processChatMessage(to_candid_Message_n40(this._uploadFile, this._downloadFile, arg0));
+                const result = await this.actor.processChatMessage(to_candid_Message_n47(this._uploadFile, this._downloadFile, arg0));
                 return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.processChatMessage(to_candid_Message_n40(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.processChatMessage(to_candid_Message_n47(this._uploadFile, this._downloadFile, arg0));
             return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
         }
     }
@@ -617,6 +723,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async purchaseCoinsWithStripe(arg0: string, arg1: bigint): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.purchaseCoinsWithStripe(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.purchaseCoinsWithStripe(arg0, arg1);
+            return result;
+        }
+    }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
@@ -628,6 +748,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async setStripeConfiguration(arg0: StripeConfiguration): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.setStripeConfiguration(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.setStripeConfiguration(arg0);
             return result;
         }
     }
@@ -645,18 +779,38 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async transform(arg0: TransformationInput): Promise<TransformationOutput> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.transform(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.transform(arg0);
+            return result;
+        }
+    }
 }
 function from_candid_ChatRole_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ChatRole): ChatRole {
     return from_candid_variant_n28(_uploadFile, _downloadFile, value);
 }
+function from_candid_CoinPurchasePlan_n45(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CoinPurchasePlan): CoinPurchasePlan {
+    return from_candid_record_n46(_uploadFile, _downloadFile, value);
+}
 function from_candid_Message_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Message): Message {
     return from_candid_record_n25(_uploadFile, _downloadFile, value);
 }
-function from_candid_TransactionRecord_n36(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _TransactionRecord): TransactionRecord {
-    return from_candid_record_n37(_uploadFile, _downloadFile, value);
+function from_candid_StripeSessionStatus_n35(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _StripeSessionStatus): StripeSessionStatus {
+    return from_candid_variant_n36(_uploadFile, _downloadFile, value);
 }
-function from_candid_TransactionType_n38(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _TransactionType): TransactionType {
-    return from_candid_variant_n39(_uploadFile, _downloadFile, value);
+function from_candid_TransactionRecord_n40(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _TransactionRecord): TransactionRecord {
+    return from_candid_record_n41(_uploadFile, _downloadFile, value);
+}
+function from_candid_TransactionType_n42(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _TransactionType): TransactionType {
+    return from_candid_variant_n43(_uploadFile, _downloadFile, value);
 }
 function from_candid_UserRole_n31(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n32(_uploadFile, _downloadFile, value);
@@ -674,6 +828,9 @@ function from_candid_opt_n33(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
     return value.length === 0 ? null : from_candid_vec_n23(_uploadFile, _downloadFile, value[0]);
 }
 function from_candid_opt_n34(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [Array<_ImageGenerationParams>]): Array<ImageGenerationParams> | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n38(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
     return value.length === 0 ? null : value[0];
 }
 function from_candid_record_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
@@ -701,6 +858,18 @@ function from_candid_record_n25(_uploadFile: (file: ExternalBlob) => Promise<Uin
     };
 }
 function from_candid_record_n37(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    userPrincipal: [] | [string];
+    response: string;
+}): {
+    userPrincipal?: string;
+    response: string;
+} {
+    return {
+        userPrincipal: record_opt_to_undefined(from_candid_opt_n38(_uploadFile, _downloadFile, value.userPrincipal)),
+        response: value.response
+    };
+}
+function from_candid_record_n41(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     principal: Principal;
     feature: string;
     transactionType: _TransactionType;
@@ -718,10 +887,34 @@ function from_candid_record_n37(_uploadFile: (file: ExternalBlob) => Promise<Uin
     return {
         principal: value.principal,
         feature: value.feature,
-        transactionType: from_candid_TransactionType_n38(_uploadFile, _downloadFile, value.transactionType),
+        transactionType: from_candid_TransactionType_n42(_uploadFile, _downloadFile, value.transactionType),
         timestamp: value.timestamp,
         balanceAfter: value.balanceAfter,
         amount: value.amount
+    };
+}
+function from_candid_record_n46(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: bigint;
+    coinAmount: bigint;
+    name: string;
+    stripePriceId: [] | [string];
+    currencyCode: string;
+    price: string;
+}): {
+    id: bigint;
+    coinAmount: bigint;
+    name: string;
+    stripePriceId?: string;
+    currencyCode: string;
+    price: string;
+} {
+    return {
+        id: value.id,
+        coinAmount: value.coinAmount,
+        name: value.name,
+        stripePriceId: record_opt_to_undefined(from_candid_opt_n38(_uploadFile, _downloadFile, value.stripePriceId)),
+        currencyCode: value.currencyCode,
+        price: value.price
     };
 }
 function from_candid_tuple_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [Principal, Array<_Message>]): [Principal, Array<Message>] {
@@ -746,7 +939,36 @@ function from_candid_variant_n32(_uploadFile: (file: ExternalBlob) => Promise<Ui
 }): UserRole {
     return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
 }
-function from_candid_variant_n39(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_variant_n36(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    completed: {
+        userPrincipal: [] | [string];
+        response: string;
+    };
+} | {
+    failed: {
+        error: string;
+    };
+}): {
+    __kind__: "completed";
+    completed: {
+        userPrincipal?: string;
+        response: string;
+    };
+} | {
+    __kind__: "failed";
+    failed: {
+        error: string;
+    };
+} {
+    return "completed" in value ? {
+        __kind__: "completed",
+        completed: from_candid_record_n37(_uploadFile, _downloadFile, value.completed)
+    } : "failed" in value ? {
+        __kind__: "failed",
+        failed: value.failed
+    } : value;
+}
+function from_candid_variant_n43(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     credit: null;
 } | {
     featureUsage: null;
@@ -761,11 +983,14 @@ function from_candid_vec_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
 function from_candid_vec_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Message>): Array<Message> {
     return value.map((x)=>from_candid_Message_n24(_uploadFile, _downloadFile, x));
 }
-function from_candid_vec_n35(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_TransactionRecord>): Array<TransactionRecord> {
-    return value.map((x)=>from_candid_TransactionRecord_n36(_uploadFile, _downloadFile, x));
+function from_candid_vec_n39(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_TransactionRecord>): Array<TransactionRecord> {
+    return value.map((x)=>from_candid_TransactionRecord_n40(_uploadFile, _downloadFile, x));
 }
-function to_candid_ChatRole_n42(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ChatRole): _ChatRole {
-    return to_candid_variant_n43(_uploadFile, _downloadFile, value);
+function from_candid_vec_n44(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_CoinPurchasePlan>): Array<CoinPurchasePlan> {
+    return value.map((x)=>from_candid_CoinPurchasePlan_n45(_uploadFile, _downloadFile, x));
+}
+function to_candid_ChatRole_n49(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ChatRole): _ChatRole {
+    return to_candid_variant_n50(_uploadFile, _downloadFile, value);
 }
 function to_candid_ContentRequest_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ContentRequest): _ContentRequest {
     return to_candid_record_n12(_uploadFile, _downloadFile, value);
@@ -776,8 +1001,8 @@ function to_candid_Emotion_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint
 function to_candid_Language_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Language): _Language {
     return to_candid_variant_n6(_uploadFile, _downloadFile, value);
 }
-function to_candid_Message_n40(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Message): _Message {
-    return to_candid_record_n41(_uploadFile, _downloadFile, value);
+function to_candid_Message_n47(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Message): _Message {
+    return to_candid_record_n48(_uploadFile, _downloadFile, value);
 }
 function to_candid_SubtitleRequest_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: SubtitleRequest): _SubtitleRequest {
     return to_candid_record_n4(_uploadFile, _downloadFile, value);
@@ -878,7 +1103,7 @@ function to_candid_record_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
         style: to_candid_SubtitleStyle_n7(_uploadFile, _downloadFile, value.style)
     };
 }
-function to_candid_record_n41(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_record_n48(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     height?: bigint;
     content: string;
     role: ChatRole;
@@ -896,7 +1121,7 @@ function to_candid_record_n41(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     return {
         height: value.height ? candid_some(value.height) : candid_none(),
         content: value.content,
-        role: to_candid_ChatRole_n42(_uploadFile, _downloadFile, value.role),
+        role: to_candid_ChatRole_n49(_uploadFile, _downloadFile, value.role),
         timestamp: value.timestamp,
         imageBytes: value.imageBytes ? candid_some(value.imageBytes) : candid_none(),
         width: value.width ? candid_some(value.width) : candid_none()
@@ -958,7 +1183,7 @@ function to_candid_variant_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint
         male: null
     } : value;
 }
-function to_candid_variant_n43(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ChatRole): {
+function to_candid_variant_n50(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ChatRole): {
     user: null;
 } | {
     assistant: null;

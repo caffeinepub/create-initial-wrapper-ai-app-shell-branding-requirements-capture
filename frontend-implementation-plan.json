@@ -1,191 +1,90 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add AI Image Generator with Coin System",
+  "title": "Fix Groq API Key integration and error handling in AI Chat",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add AIImageGeneratorScreen component with single-input interface",
+      "summary": "Fix Groq API integration to correctly read, store, and pass the API key in Authorization headers",
       "acceptanceCriteria": [
-        "Screen includes one text input field with placeholder 'Enter your idea...'",
-        "Screen includes a clearly labeled 'Generate Image' button",
-        "Input and button are styled consistently with existing app design",
-        "Layout is clean and minimal"
+        "Entering a valid Groq API key in the app and sending the first message does not produce an 'Invalid API Key' or 401 error",
+        "The Authorization header sent to Groq API is correctly formatted as 'Bearer <key>' with no extra spaces",
+        "The API key is trimmed of any leading/trailing whitespace before use"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/AIImageGeneratorScreen.tsx",
+          "path": "frontend/src/hooks/useChat.ts",
           "operation": "modify",
-          "description": "Simplify the existing AIImageGeneratorScreen to a single-input interface. Replace the current complex form with one text input field (placeholder: 'Enter your idea...') and a 'Generate Image' button. Remove all advanced customization options (art style, mood, lighting, camera angle, aspect ratio selectors). Keep the coin balance display, loading state, generated image display, and download functionality. Maintain consistent Tailwind CSS styling with the existing app design."
+          "description": "Fix the API key handling in the sendMessage function: (1) When reading the API key from localStorage or environment variable, trim any whitespace using .trim(); (2) Ensure the Authorization header is constructed as `Bearer ${apiKey.trim()}` with proper string interpolation; (3) Verify that the key is used consistently throughout the request configuration; (4) Add validation to check that the trimmed key is non-empty before making the API call"
+        },
+        {
+          "path": "frontend/src/pages/AIChatScreen.tsx",
+          "operation": "modify",
+          "description": "Update the API key input handling to trim whitespace on save: (1) When the user enters or updates the API key in the settings/input field, apply .trim() before storing it in localStorage; (2) Add visual feedback (e.g., a success toast) when the key is successfully saved; (3) Ensure the trimmed key is immediately used for subsequent API calls without requiring a page refresh"
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Implement auto-enhanced prompt system",
+      "summary": "Replace hardcoded Groq API key in .env with placeholder and prioritize user-entered keys",
       "acceptanceCriteria": [
-        "User's raw input is enhanced with professional settings before API call",
-        "Enhanced prompt includes: Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece",
-        "Original user input is preserved and visible in the interface",
-        "Enhancement happens automatically without user action"
+        "The hardcoded Groq API key in frontend/.env is replaced with a placeholder or empty value",
+        "The app correctly uses the API key entered by the user in the input field, giving it priority over the environment variable",
+        "If no key is stored, the user is prompted to enter one"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useAIImageGenerator.ts",
+          "path": "frontend/.env",
           "operation": "modify",
-          "description": "Modify the hook to automatically append professional enhancement text to user prompts before generation. When user submits a prompt, prepend or append: 'Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece' to the user's input. Store both the original user input and the enhanced prompt. Remove all other customization parameters (artStyle, mood, lighting, etc.). Keep coin balance validation and error handling."
+          "description": "Replace the existing VITE_GROQ_API_KEY value (gsk_5V006bT4...) with an empty string or placeholder comment like '# Add your Groq API key here or enter it in the app settings'. Remove any actual key value to prevent hardcoding credentials in the repository"
+        },
+        {
+          "path": "frontend/src/hooks/useChat.ts",
+          "operation": "modify",
+          "description": "Update the API key resolution logic to prioritize user input: (1) First check localStorage for a user-entered key; (2) Fall back to the environment variable VITE_GROQ_API_KEY only if localStorage is empty; (3) If both are empty or undefined, set an internal flag to prompt the user; (4) Ensure the key resolution happens at the start of sendMessage before the API call"
+        },
+        {
+          "path": "frontend/src/pages/AIChatScreen.tsx",
+          "operation": "modify",
+          "description": "Add a UI prompt when no API key is available: (1) Check if a valid API key exists in localStorage or environment on component mount; (2) If missing, display an alert or banner asking the user to enter their Groq API key; (3) Provide an input field or settings button to capture the key; (4) Hide the prompt once a valid key is saved"
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Implement 10-coin generation system with balance validation",
+      "summary": "Improve error handling to display clear, actionable messages for API authentication, rate limit, and network errors",
       "acceptanceCriteria": [
-        "Each image generation deducts exactly 10 coins from user balance",
-        "Generate button is disabled when user has fewer than 10 coins",
-        "Coin balance check happens before generation request",
-        "Coin balance updates immediately after successful generation"
+        "When the Groq API returns a 401 error, the UI shows a message like 'Invalid API Key. Please check your key and try again.'",
+        "When the API returns a 429 error, the UI shows a rate limit message",
+        "Network errors are caught and shown to the user with a friendly message",
+        "Errors are displayed inline in the chat UI, not just in the console"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/constants/coins.ts",
+          "path": "frontend/src/hooks/useChat.ts",
           "operation": "modify",
-          "description": "Add a new constant IMAGE_GENERATION_COST with value 10 to define the coin cost for image generation. Keep existing constants (ACTION_COST, LOW_BALANCE_THRESHOLD, etc.) unchanged."
+          "description": "Enhance error handling in the sendMessage function: (1) Wrap the Groq API fetch call in a try-catch block; (2) Check response.status explicitly: if 401, throw an error with message 'Invalid API Key. Please check your key and try again.'; if 429, throw 'Rate limit exceeded. Please try again later.'; (3) For network errors (fetch failures), throw 'Network error. Please check your connection and try again.'; (4) Store the error message in the hook's state (e.g., setError) so it can be displayed in the UI; (5) Append an assistant message with role 'assistant' and content containing the error to the messages array for inline display"
         },
         {
-          "path": "frontend/src/hooks/useAIImageGenerator.ts",
+          "path": "frontend/src/pages/AIChatScreen.tsx",
           "operation": "modify",
-          "description": "Import IMAGE_GENERATION_COST from constants. Add coin balance validation before generation using the useCoinBalance hook. Disable generation if balance is less than 10 coins. After successful generation, invalidate the coin balance query to trigger a refresh. Include error handling for insufficient coin errors using utility functions from coinErrors.ts."
-        },
-        {
-          "path": "frontend/src/pages/AIImageGeneratorScreen.tsx",
-          "operation": "modify",
-          "description": "Import IMAGE_GENERATION_COST constant. Display coin cost (10 coins) near the Generate button. Disable the Generate button when user balance is below 10 coins. Show the CoinPurchaseDialog when insufficient coins are detected. Use the CoinGate component to wrap the generation interface if appropriate."
+          "description": "Display errors inline in the chat UI: (1) Access the error state from useChat hook; (2) When an error exists, render an error message bubble in the chat conversation thread styled distinctly (e.g., red background or border); (3) Ensure the error is shown below the user's last message; (4) Provide a 'Retry' or 'Dismiss' button within the error message for better UX; (5) Clear the error state when the user sends a new message or dismisses the error"
         }
       ]
     },
     {
-      "id": "REQ-5",
-      "summary": "Display loading animation during image generation",
+      "id": "REQ-4",
+      "summary": "Add client-side validation for the Groq API key input to ensure correct format before saving",
       "acceptanceCriteria": [
-        "Loading animation appears immediately when Generate button is clicked",
-        "Loading state disables the Generate button to prevent duplicate requests",
-        "Loading animation includes visual indicator (spinner or progress bar)",
-        "Loading message communicates that image is being generated"
+        "The API key input field validates that the value starts with 'gsk_'",
+        "If the key format is invalid, an inline error message is shown before allowing submission",
+        "A valid key passes validation and is saved without error"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/AIImageGeneratorScreen.tsx",
+          "path": "frontend/src/pages/AIChatScreen.tsx",
           "operation": "modify",
-          "description": "Add loading state handling during image generation. Show a loading spinner or progress indicator when generation is in progress. Disable the Generate button during loading to prevent duplicate requests. Display a loading message such as 'Generating your image...' or 'Creating masterpiece...'. Use existing loading patterns from other screens in the app for consistency."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Display generated image with download button",
-      "acceptanceCriteria": [
-        "Generated image displays clearly in the interface after generation completes",
-        "Download button appears below or adjacent to the generated image",
-        "Clicking download button triggers browser download with appropriate filename",
-        "Image maintains aspect ratio and quality in display"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AIImageGeneratorScreen.tsx",
-          "operation": "modify",
-          "description": "Ensure the generated image is displayed with proper aspect ratio and quality after generation completes. Add a download button below or adjacent to the image. Use the downloadImageFile utility from frontend/src/utils/downloadImageFile.ts to handle the download action with an appropriate filename (e.g., 'ai-generated-image.png' or timestamped name). Style the download button consistently with existing app buttons."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Display recharge message when balance reaches 0",
-      "acceptanceCriteria": [
-        "Message displays prominently when coin balance is exactly 0",
-        "Message text reads: 'Please recharge to generate more images'",
-        "Generate button is disabled when this message is shown",
-        "Message styling is clear and noticeable"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AIImageGeneratorScreen.tsx",
-          "operation": "modify",
-          "description": "Add conditional rendering to display a prominent message 'Please recharge to generate more images' when the user's coin balance is exactly 0. Use the useCoinBalance hook to check the balance. Style the message with clear, noticeable styling (e.g., alert box or banner). Ensure the Generate button remains disabled when this message is shown. Include a 'Buy Coins' button that opens the CoinPurchaseDialog."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Structure API integration with configurable endpoint and credentials",
-      "acceptanceCriteria": [
-        "Code includes clearly documented constants for API endpoint URL and authentication key",
-        "API call sends enhanced prompt to the configured endpoint",
-        "API call uses proper authentication headers",
-        "Code includes error handling for failed API requests",
-        "Implementation works with REST-based AI image generation APIs (Stability AI, Replicate, Hugging Face compatible)"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useAIImageGenerator.ts",
-          "operation": "modify",
-          "description": "Add clearly documented constants at the top of the file for API_ENDPOINT_URL and API_AUTH_KEY with placeholder values and instructions for the user to fill in their actual credentials. Implement a fetch call to the configured API endpoint that sends the enhanced prompt as a JSON payload. Include proper authentication headers (e.g., Authorization: Bearer token). Add comprehensive error handling for network failures, API errors, and timeouts. Structure the API call to be compatible with common REST-based AI image generation services (Stability AI, Replicate, Hugging Face). Parse the response to extract the generated image URL or base64 data. Include JSDoc comments explaining how to configure the API integration."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Ensure responsive and mobile-friendly design",
-      "acceptanceCriteria": [
-        "Interface adapts properly to mobile screen sizes (320px and above)",
-        "Touch targets are appropriately sized for mobile interaction",
-        "Layout uses Tailwind CSS consistent with existing screens",
-        "Design is clean and minimal without unnecessary visual clutter"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AIImageGeneratorScreen.tsx",
-          "operation": "modify",
-          "description": "Apply responsive Tailwind CSS classes to ensure the interface adapts to mobile screen sizes (320px and above). Use responsive breakpoints (sm:, md:, lg:) for layout adjustments. Ensure touch targets (buttons, inputs) are appropriately sized for mobile interaction (min 44x44px). Use clean, minimal styling consistent with existing app screens. Test layout on small screens and adjust padding, margins, and font sizes as needed. Follow the existing responsive patterns from other screens like AIChatScreen or DashboardScreen."
-        }
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "summary": "Integrate with Internet Identity authentication",
-      "acceptanceCriteria": [
-        "Image generator screen requires active Internet Identity session",
-        "Unauthenticated users are redirected to login",
-        "User's principal ID is used to track coin balance",
-        "Integration uses existing useInternetIdentity hook"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AIImageGeneratorScreen.tsx",
-          "operation": "modify",
-          "description": "Ensure the AIImageGeneratorScreen is only accessible to authenticated users. The existing AuthenticatedLayout already handles authentication requirements, so verify the screen is rendered within that layout. Use the useInternetIdentity hook to access the user's identity and principal. The coin balance is already tied to the authenticated user's principal through the existing useCoinBalance hook, so no additional wiring is needed. Verify that unauthenticated access is blocked by the AppContent authentication gate."
-        }
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "summary": "Add navigation route and menu item for AI Image Generator",
-      "acceptanceCriteria": [
-        "New route 'ai-image-generator' added to hash routing system",
-        "Menu item for AI Image Generator appears in navigation menu",
-        "Menu item includes appropriate icon",
-        "Route properly renders AIImageGeneratorScreen component"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useHashRoute.ts",
-          "operation": "modify",
-          "description": "Verify that 'ai-image-generator' is included in the ValidRoute type and route handling logic. The route should already exist based on the file summaries, so confirm it is properly configured. If missing, add 'ai-image-generator' to the ValidRoute union type and route change handler."
-        },
-        {
-          "path": "frontend/src/components/AuthenticatedLayout.tsx",
-          "operation": "modify",
-          "description": "Verify that the 'ai-image-generator' route is wired into the route-based content rendering switch statement. The AIImageGeneratorScreen should already be imported and rendered when the route matches 'ai-image-generator'. Verify that a navigation menu item for 'AI Image Generator' exists in the mobile-responsive navigation menu with an appropriate icon (e.g., Sparkles, Image, or Wand icon from lucide-react). If the menu item is missing, add it to the navigation menu with consistent styling and an icon that matches other menu items."
+          "description": "Add client-side validation to the API key input field: (1) On input change or before saving, check if the trimmed key starts with 'gsk_' using key.trim().startsWith('gsk_'); (2) Validate that the key length is at least 20 characters (or a reasonable minimum); (3) If validation fails, display an inline error message below the input field (e.g., 'Invalid API key format. Groq keys start with gsk_'); (4) Disable the save button until validation passes; (5) Clear the error message when the user corrects the input; (6) Only save the key to localStorage if validation succeeds"
         }
       ]
     }

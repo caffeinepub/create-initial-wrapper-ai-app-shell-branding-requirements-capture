@@ -1,19 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add a complete AI image generation feature with coin-based usage system and Internet Identity authentication.
+**Goal:** Fix the Groq API key integration, improve error handling, and add client-side API key validation in the AI Chat feature.
 
 **Planned changes:**
-- Add new AIImageGeneratorScreen with single text input ('Enter your idea...') and 'Generate Image' button
-- Implement auto-enhanced prompts that append professional settings (4K, cinematic lighting, ultra-detailed, sharp focus, masterpiece) to user input
-- Add coin system where each generation costs 10 coins
-- Initialize new users with 50 free coins on first login
-- Display loading animation during image generation
-- Show generated image with download button
-- Display 'Please recharge to generate more images' message when coins reach 0
-- Configure frontend to call external AI image generation API with configurable endpoint and authentication
-- Ensure mobile-friendly, responsive design with clean minimal aesthetic
-- Integrate with existing Internet Identity authentication
-- Add navigation route and menu item for AI Image Generator
+- Fix `useChat.ts` to correctly read, trim, and pass the user-entered Groq API key as `Authorization: Bearer <key>` in all API requests
+- Replace the hardcoded `VITE_GROQ_API_KEY` in `frontend/.env` with a placeholder; ensure the app prioritizes the key entered by the user at runtime
+- Improve error handling in `useChat.ts` and `AIChatScreen.tsx` to display distinct inline messages for 401 (Invalid API Key), 429 (Rate limit exceeded), and network errors
+- Add client-side validation on the API key input field to check that the value starts with `gsk_` and meets a minimum length, showing an inline error if the format is incorrect
 
-**User-visible outcome:** Authenticated users can generate AI images by entering prompts, with automatic professional enhancement, coin-based usage tracking (starting with 50 free coins, 10 coins per generation), and ability to download generated images.
+**User-visible outcome:** Users can enter a valid Groq API key in the app and send messages without authentication errors. If an error occurs (invalid key, rate limit, network failure), a clear and actionable message is shown inline in the chat UI. Invalid key formats are caught before submission.
