@@ -1,0 +1,197 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-a-new-aiimagegeneratorscreen-component-with-a-single-input-interface-consisting-of-one-text-input-box-with-placeholder-enter-your-idea-and-a-generate-image-button",
+      "featureTitle": "Add a new AIImageGeneratorScreen component with a single-input interface consisting of one text input box with placeholder 'Enter your idea...' and a 'Generate Image' button",
+      "files": [
+        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-auto-enhanced-prompt-system-that-automatically-appends-professional-settings-to-user-input-before-generation-ultra-high-quality-4k-professional-detailed-cinematic-lighting-sharp-focus-masterpiece",
+      "featureTitle": "Implement auto-enhanced prompt system that automatically appends professional settings to user input before generation: 'Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece'",
+      "files": [
+        "frontend/src/hooks/useAIImageGenerator.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-coin-based-generation-system-where-each-image-generation-costs-10-coins-with-validation-to-prevent-generation-when-user-has-insufficient-balance",
+      "featureTitle": "Implement coin-based generation system where each image generation costs 10 coins, with validation to prevent generation when user has insufficient balance",
+      "files": [
+        "frontend/src/constants/coins.ts",
+        "frontend/src/hooks/useAIImageGenerator.ts",
+        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-loading-animation-with-appropriate-messaging-while-image-generation-is-in-progress",
+      "featureTitle": "Display loading animation with appropriate messaging while image generation is in progress",
+      "files": [
+        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-generated-image-in-the-interface-with-a-download-button-that-triggers-browser-download-of-the-image-file",
+      "featureTitle": "Display generated image in the interface with a download button that triggers browser download of the image file",
+      "files": [
+        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-display-please-recharge-to-generate-more-images-message-when-user-s-coin-balance-reaches-0-coins",
+      "featureTitle": "Display 'Please recharge to generate more images' message when user's coin balance reaches 0 coins",
+      "files": [
+        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-structure-frontend-code-to-call-external-ai-image-generation-api-with-user-s-enhanced-prompt-configurable-to-accept-api-endpoint-url-and-authentication-credentials-as-constants",
+      "featureTitle": "Structure frontend code to call external AI image generation API with user's enhanced prompt, configurable to accept API endpoint URL and authentication credentials as constants",
+      "files": [
+        "frontend/src/hooks/useAIImageGenerator.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-ensure-ai-image-generator-screen-is-fully-responsive-and-mobile-friendly-with-clean-minimal-design-aesthetic-consistent-with-existing-app-styling",
+      "featureTitle": "Ensure AI Image Generator screen is fully responsive and mobile-friendly with clean, minimal design aesthetic consistent with existing app styling",
+      "files": [
+        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-integrate-ai-image-generator-with-existing-internet-identity-authentication-system-to-ensure-only-authenticated-users-can-access-generation-features",
+      "featureTitle": "Integrate AI Image Generator with existing Internet Identity authentication system to ensure only authenticated users can access generation features",
+      "files": [
+        "frontend/src/pages/AIImageGeneratorScreen.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-navigation-route-and-menu-item-for-ai-image-generator-screen-in-the-authenticated-layout",
+      "featureTitle": "Add navigation route and menu item for AI Image Generator screen in the authenticated layout",
+      "files": [
+        "frontend/src/components/AuthenticatedLayout.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

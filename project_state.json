@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "AI Image Generator app with one-click interface, auto-enhanced prompts, coin-based generation system (50 free coins, 10 per image), loading animations, image display with download, recharge messaging, Internet Identity authentication, and external API integration for image generation",
+  "architectural_notes": [
+    "Backend: Motoko for coin tracking and user management",
+    "Frontend: React + TypeScript with Tailwind CSS",
+    "API calls made from frontend TypeScript code",
+    "External AI image generation service integration (API endpoint and credentials to be added post-deployment)",
+    "Users authenticated via Internet Identity system",
+    "Coin-based economy: 50 free starting coins, 10 coins per image generation"
+  ],
+  "known_issues": [
+    "External API credentials (endpoint and authentication key) must be added after deployment for actual image generation"
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-add-a-new-aiimagegeneratorscreen-component-with-a-single-input-interface-consisting-of-one-text-input-box-with-placeholder-enter-your-idea-and-a-generate-image-button",
+      "title": "Add a new AIImageGeneratorScreen component with a single-input interface consisting of one text input box with placeholder 'Enter your idea...' and a 'Generate Image' button",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-auto-enhanced-prompt-system-that-automatically-appends-professional-settings-to-user-input-before-generation-ultra-high-quality-4k-professional-detailed-cinematic-lighting-sharp-focus-masterpiece",
+      "title": "Implement auto-enhanced prompt system that automatically appends professional settings to user input before generation: 'Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece'",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-coin-based-generation-system-where-each-image-generation-costs-10-coins-with-validation-to-prevent-generation-when-user-has-insufficient-balance",
+      "title": "Implement coin-based generation system where each image generation costs 10 coins, with validation to prevent generation when user has insufficient balance",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-loading-animation-with-appropriate-messaging-while-image-generation-is-in-progress",
+      "title": "Display loading animation with appropriate messaging while image generation is in progress",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-generated-image-in-the-interface-with-a-download-button-that-triggers-browser-download-of-the-image-file",
+      "title": "Display generated image in the interface with a download button that triggers browser download of the image file",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-please-recharge-to-generate-more-images-message-when-user-s-coin-balance-reaches-0-coins",
+      "title": "Display 'Please recharge to generate more images' message when user's coin balance reaches 0 coins",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-structure-frontend-code-to-call-external-ai-image-generation-api-with-user-s-enhanced-prompt-configurable-to-accept-api-endpoint-url-and-authentication-credentials-as-constants",
+      "title": "Structure frontend code to call external AI image generation API with user's enhanced prompt, configurable to accept API endpoint URL and authentication credentials as constants",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-ai-image-generator-screen-is-fully-responsive-and-mobile-friendly-with-clean-minimal-design-aesthetic-consistent-with-existing-app-styling",
+      "title": "Ensure AI Image Generator screen is fully responsive and mobile-friendly with clean, minimal design aesthetic consistent with existing app styling",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-integrate-ai-image-generator-with-existing-internet-identity-authentication-system-to-ensure-only-authenticated-users-can-access-generation-features",
+      "title": "Integrate AI Image Generator with existing Internet Identity authentication system to ensure only authenticated users can access generation features",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-navigation-route-and-menu-item-for-ai-image-generator-screen-in-the-authenticated-layout",
+      "title": "Add navigation route and menu item for AI Image Generator screen in the authenticated layout",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Simple one-click AI image generator interface with single input box and Generate Image button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Auto-enhanced prompt system that adds professional settings (4K, cinematic lighting, ultra-detailed, sharp focus, masterpiece)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Coin system: users start with 50 free coins, 10 coins deducted per image generation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Loading animation during image generation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Image display with download button functionality",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Recharge message display when user reaches 0 coins",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "External AI image generation API integration (Stability AI, Replicate, or Hugging Face)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Internet Identity authentication integration for user login",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Clean, minimal, mobile-friendly UI design",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Initialize new users with 50 free coins in their account when they first authenticate via Internet Identity",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "AI Image Generator",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

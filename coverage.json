@@ -1,0 +1,152 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-21T03:22:53.381Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 11,
+    "implemented": 10,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Add a new AIImageGeneratorScreen component with a single-input interface consisting of one text input box with placeholder 'Enter your idea...' and a 'Generate Image' button",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-10",
+        "summary": "Integrate AI Image Generator with existing Internet Identity authentication system to ensure only authenticated users can access generation features",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-11",
+        "summary": "Add navigation route and menu item for AI Image Generator screen in the authenticated layout",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useHashRoute.ts",
+          "frontend/src/components/AuthenticatedLayout.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/AuthenticatedLayout.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Implement auto-enhanced prompt system that automatically appends professional settings to user input before generation: 'Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece'",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useAIImageGenerator.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useAIImageGenerator.ts"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Implement coin-based generation system where each image generation costs 10 coins, with validation to prevent generation when user has insufficient balance",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/constants/coins.ts",
+          "frontend/src/hooks/useAIImageGenerator.ts",
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/constants/coins.ts",
+          "frontend/src/hooks/useAIImageGenerator.ts",
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Initialize new users with 50 free coins in their account when they first authenticate via Internet Identity",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Display loading animation with appropriate messaging while image generation is in progress",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Display generated image in the interface with a download button that triggers browser download of the image file",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Display 'Please recharge to generate more images' message when user's coin balance reaches 0 coins",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Structure frontend code to call external AI image generation API with user's enhanced prompt, configurable to accept API endpoint URL and authentication credentials as constants",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useAIImageGenerator.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useAIImageGenerator.ts"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Ensure AI Image Generator screen is fully responsive and mobile-friendly with clean, minimal design aesthetic consistent with existing app styling",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AIImageGeneratorScreen.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/components/AuthenticatedLayout.tsx",
+    "frontend/src/constants/coins.ts",
+    "frontend/src/hooks/useAIImageGenerator.ts",
+    "frontend/src/pages/AIImageGeneratorScreen.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

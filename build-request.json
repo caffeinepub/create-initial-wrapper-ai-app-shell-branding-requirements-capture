@@ -1,0 +1,250 @@
+{
+  "kind": "build_request",
+  "title": "Add AI Image Generator with Coin System",
+  "projectName": "AI Image Generator",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add a new AIImageGeneratorScreen component with a single-input interface consisting of one text input box with placeholder 'Enter your idea...' and a 'Generate Image' button",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1",
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Simple One-Click Interface: Single input box ('Enter your idea...') + 'Generate Image' button"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Screen includes one text input field with placeholder 'Enter your idea...'",
+        "Screen includes a clearly labeled 'Generate Image' button",
+        "Input and button are styled consistently with existing app design",
+        "Layout is clean and minimal"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement auto-enhanced prompt system that automatically appends professional settings to user input before generation: 'Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece'",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Auto-Enhanced Prompts: Automatically adds professional settings (4K, cinematic lighting, ultra-detailed, sharp focus, masterpiece)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User's raw input is enhanced with professional settings before API call",
+        "Enhanced prompt includes: Ultra high quality, 4K, professional, detailed, cinematic lighting, sharp focus, masterpiece",
+        "Original user input is preserved and visible in the interface",
+        "Enhancement happens automatically without user action"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement coin-based generation system where each image generation costs 10 coins, with validation to prevent generation when user has insufficient balance",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Coin System: Users start with 50 free coins, 10 coins per generation"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each image generation deducts exactly 10 coins from user balance",
+        "Generate button is disabled when user has fewer than 10 coins",
+        "Coin balance check happens before generation request",
+        "Coin balance updates immediately after successful generation"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Initialize new users with 50 free coins in their account when they first authenticate via Internet Identity",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Users start with 50 free coins"
+        ]
+      },
+      "acceptanceCriteria": [
+        "New users receive exactly 50 coins upon first login",
+        "Coin balance is persisted in backend state",
+        "Existing users retain their current coin balance"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Display loading animation with appropriate messaging while image generation is in progress",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Loading Animation: Shows while generating"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Loading animation appears immediately when Generate button is clicked",
+        "Loading state disables the Generate button to prevent duplicate requests",
+        "Loading animation includes visual indicator (spinner or progress bar)",
+        "Loading message communicates that image is being generated"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Display generated image in the interface with a download button that triggers browser download of the image file",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Image Display & Download: Generated image with download button"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated image displays clearly in the interface after generation completes",
+        "Download button appears below or adjacent to the generated image",
+        "Clicking download button triggers browser download with appropriate filename",
+        "Image maintains aspect ratio and quality in display"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Display 'Please recharge to generate more images' message when user's coin balance reaches 0 coins",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Recharge Message: 'Please recharge to generate more images' when coins = 0"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Message displays prominently when coin balance is exactly 0",
+        "Message text reads: 'Please recharge to generate more images'",
+        "Generate button is disabled when this message is shown",
+        "Message styling is clear and noticeable"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Structure frontend code to call external AI image generation API with user's enhanced prompt, configurable to accept API endpoint URL and authentication credentials as constants",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-9",
+          "msg-10"
+        ],
+        "quotes": [
+          "External API Integration: Frontend will call your AI image generation service (Stability AI, Replicate, Hugging Face, etc.)",
+          "you'll add API endpoint and authentication credentials for your chosen AI image generation service"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Code includes clearly documented constants for API endpoint URL and authentication key",
+        "API call sends enhanced prompt to the configured endpoint",
+        "API call uses proper authentication headers",
+        "Code includes error handling for failed API requests",
+        "Implementation works with REST-based AI image generation APIs (Stability AI, Replicate, Hugging Face compatible)"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Ensure AI Image Generator screen is fully responsive and mobile-friendly with clean, minimal design aesthetic consistent with existing app styling",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Clean, Minimal, Mobile-Friendly UI",
+          "Mobile-Friendly UI: Clean, minimal design that works on all devices"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Interface adapts properly to mobile screen sizes (320px and above)",
+        "Touch targets are appropriately sized for mobile interaction",
+        "Layout uses Tailwind CSS consistent with existing screens",
+        "Design is clean and minimal without unnecessary visual clutter"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Integrate AI Image Generator with existing Internet Identity authentication system to ensure only authenticated users can access generation features",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ],
+        "quotes": [
+          "Internet Identity Authentication: Integrated user login"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Image generator screen requires active Internet Identity session",
+        "Unauthenticated users are redirected to login",
+        "User's principal ID is used to track coin balance",
+        "Integration uses existing useInternetIdentity hook"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Add navigation route and menu item for AI Image Generator screen in the authenticated layout",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-5",
+          "msg-9"
+        ]
+      },
+      "acceptanceCriteria": [
+        "New route 'ai-image-generator' added to hash routing system",
+        "Menu item for AI Image Generator appears in navigation menu",
+        "Menu item includes appropriate icon",
+        "Route properly renders AIImageGeneratorScreen component"
+      ]
+    }
+  ],
+  "constraints": [
+    "Use existing coin system infrastructure (useCoinBalance, coin deduction patterns)",
+    "Maintain single-actor backend architecture with all logic in backend/main.mo",
+    "Do not modify immutable frontend paths: useInternetIdentity hooks, useActor.ts, main.tsx, or frontend/src/components/ui",
+    "Use React, Tailwind CSS, and React Query as specified in system stack",
+    "API integration must use frontend REST calls, not backend Motoko HTTP outcalls",
+    "Follow existing patterns from AIImageGeneratorScreen.tsx and useAIImageGenerator.ts hooks for structure"
+  ],
+  "nonGoals": [
+    "Implementing actual payment integration for coin recharge (message only)",
+    "Building admin panel for manual coin management",
+    "Including multiple API provider options in the UI",
+    "Adding image editing or post-processing features",
+    "Implementing image history or gallery features",
+    "Creating complex prompt engineering UI beyond auto-enhancement",
+    "Adding social sharing capabilities"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
