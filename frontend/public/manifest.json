@@ -1,7 +1,7 @@
 {
-  "name": "Shake.com",
-  "short_name": "Shake.com",
-  "description": "AI-powered content creation platform",
+  "name": "Shake AI",
+  "short_name": "Shake AI",
+  "description": "Shake AI - AI-powered content creation platform",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

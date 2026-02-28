@@ -3,6 +3,7 @@ import { CheckCircle, Coins, Loader2, AlertCircle, ArrowLeft, RefreshCw } from '
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { usePurchaseCoinsWithStripe } from '../hooks/usePurchaseCoinsWithStripe';
+import { useCoinPurchasePlans } from '../hooks/useCoinPurchasePlans';
 import { toast } from 'sonner';
 import type { RouteKey } from '../hooks/useHashRoute';
 
@@ -11,8 +12,10 @@ interface PaymentSuccessScreenProps {
 }
 
 export default function PaymentSuccessScreen({ onNavigate }: PaymentSuccessScreenProps) {
-  const { mutate: purchaseCoinsWithStripe, isPending, isSuccess, isError, error, data } = usePurchaseCoinsWithStripe();
+  const { mutate: purchaseCoinsWithStripe, isPending, isSuccess, isError, error, data: newBalance } = usePurchaseCoinsWithStripe();
+  const { data: plans } = useCoinPurchasePlans();
   const hasProcessed = useRef(false);
+  const planIdRef = useRef<bigint | null>(null);
 
   useEffect(() => {
     if (hasProcessed.current) return;
@@ -21,28 +24,24 @@ export default function PaymentSuccessScreen({ onNavigate }: PaymentSuccessScree
     // Hash format: #payment-success?session_id=xxx&plan_id=yyy
     const hashPart = window.location.hash;
     const queryStart = hashPart.indexOf('?');
-    if (queryStart === -1) {
-      return;
-    }
+    if (queryStart === -1) return;
 
     const queryString = hashPart.slice(queryStart + 1);
     const params = new URLSearchParams(queryString);
     const sessionId = params.get('session_id');
     const planIdStr = params.get('plan_id');
 
-    if (!sessionId || !planIdStr) {
-      return;
-    }
+    if (!sessionId || !planIdStr) return;
 
     hasProcessed.current = true;
     const planId = BigInt(planIdStr);
+    planIdRef.current = planId;
 
     purchaseCoinsWithStripe(
       { stripeSessionId: sessionId, planId },
       {
-        onSuccess: (result) => {
-          const coins = Number(result);
-          toast.success(`${coins} coins added successfully!`);
+        onSuccess: (balance) => {
+          toast.success(`Coins added successfully! New balance: ${Number(balance)}`);
         },
         onError: (err: any) => {
           toast.error(err?.message || 'Failed to credit coins. Please contact support.');
@@ -50,6 +49,10 @@ export default function PaymentSuccessScreen({ onNavigate }: PaymentSuccessScree
       }
     );
   }, [purchaseCoinsWithStripe]);
+
+  // Find the plan to display the coin amount credited
+  const purchasedPlan = plans?.find((p) => planIdRef.current !== null && p.id === planIdRef.current);
+  const coinsAdded = purchasedPlan ? Number(purchasedPlan.coinAmount) : null;
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
@@ -61,7 +64,9 @@ export default function PaymentSuccessScreen({ onNavigate }: PaymentSuccessScree
                 <Loader2 className="h-16 w-16 text-primary animate-spin" />
               </div>
               <CardTitle className="text-2xl">Processing Payment</CardTitle>
-              <CardDescription>Please wait while we credit your coins...</CardDescription>
+              <CardDescription>
+                Please wait while we verify your payment and credit your coins...
+              </CardDescription>
             </>
           )}
 
@@ -70,8 +75,10 @@ export default function PaymentSuccessScreen({ onNavigate }: PaymentSuccessScree
               <div className="flex justify-center mb-4">
                 <CheckCircle className="h-16 w-16 text-green-500" />
               </div>
-              <CardTitle className="text-2xl text-green-600">Payment Successful!</CardTitle>
-              <CardDescription>Your coins have been added to your account.</CardDescription>
+              <CardTitle className="text-2xl text-green-600">Payment Successful! 🎉</CardTitle>
+              <CardDescription>
+                Your coins have been added to your account and are ready to use.
+              </CardDescription>
             </>
           )}
 
@@ -93,22 +100,40 @@ export default function PaymentSuccessScreen({ onNavigate }: PaymentSuccessScree
                 <AlertCircle className="h-16 w-16 text-muted-foreground" />
               </div>
               <CardTitle className="text-2xl">Invalid Payment Link</CardTitle>
-              <CardDescription>No payment session found. Please try again.</CardDescription>
+              <CardDescription>
+                No payment session found. Please try purchasing again.
+              </CardDescription>
             </>
           )}
         </CardHeader>
 
         <CardContent className="space-y-4">
           {isSuccess && (
-            <div className="flex items-center justify-center gap-2 p-4 rounded-lg bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400">
-              <Coins className="h-5 w-5" />
-              <span className="font-semibold">Coins credited to your account!</span>
+            <div className="flex flex-col items-center gap-3 p-4 rounded-lg bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400">
+              <div className="flex items-center gap-2">
+                <Coins className="h-5 w-5" />
+                <span className="font-semibold text-lg">
+                  {coinsAdded !== null
+                    ? `${coinsAdded.toLocaleString()} coins added!`
+                    : 'Coins credited to your account!'}
+                </span>
+              </div>
+              {newBalance !== undefined && (
+                <p className="text-sm opacity-80">
+                  New balance: <strong>{Number(newBalance).toLocaleString()} coins</strong>
+                </p>
+              )}
             </div>
           )}
 
           {isError && (
-            <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm">
-              If you were charged but coins weren't added, please contact support with your session ID.
+            <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm text-left">
+              <p className="font-medium mb-1">What to do next:</p>
+              <ul className="list-disc list-inside space-y-1 text-xs">
+                <li>If you were charged, please contact support with your session details.</li>
+                <li>Your coins balance has not been affected if the error occurred.</li>
+                <li>You can retry the purchase from the dashboard.</li>
+              </ul>
             </div>
           )}
 

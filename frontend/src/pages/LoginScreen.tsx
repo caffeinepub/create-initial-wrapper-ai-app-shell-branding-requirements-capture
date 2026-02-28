@@ -17,21 +17,15 @@ export default function LoginScreen() {
   // Redirect to dashboard after successful login
   useEffect(() => {
     if (identity) {
-      console.log('✅ Login successful! Principal:', identity.getPrincipal().toString());
-      console.log('🔄 Redirecting to dashboard...');
       navigate('dashboard');
     }
   }, [identity, navigate]);
 
   const handleLogin = async () => {
-    console.log('🔐 Login initiated by user');
-    console.log('⏰ Timestamp:', new Date().toISOString());
-
     try {
       // Detect if popup blockers might interfere
       const testPopup = window.open('', '_blank', 'width=1,height=1');
       if (!testPopup || testPopup.closed || typeof testPopup.closed === 'undefined') {
-        console.warn('⚠️ Popup blocker detected - attempting fallback');
         toast.warning('Popup Blocker Detected', {
           description: 'Please allow popups for this site to enable login.',
         });
@@ -39,18 +33,9 @@ export default function LoginScreen() {
         testPopup.close();
       }
 
-      console.log('🚀 Calling login...');
       await login();
-      console.log('✅ Login call completed successfully');
     } catch (error: any) {
-      console.error('❌ Login error occurred:', error);
-      console.error('Error type:', error?.name);
-      console.error('Error message:', error?.message);
-      console.error('Error stack:', error?.stack);
-
-      // Handle specific error cases
       if (error.message === 'User is already authenticated') {
-        console.log('ℹ️ User already authenticated, redirecting to dashboard');
         navigate('dashboard');
       } else {
         toast.error('Login Failed', {
@@ -59,16 +44,6 @@ export default function LoginScreen() {
       }
     }
   };
-
-  // Log authentication state changes
-  useEffect(() => {
-    console.log('🔄 Authentication state changed:', {
-      loginStatus,
-      hasIdentity: !!identity,
-      isError: isLoginError,
-      errorMessage: loginError?.message,
-    });
-  }, [loginStatus, identity, isLoginError, loginError]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -79,12 +54,12 @@ export default function LoginScreen() {
             <div className="flex items-center gap-3 sm:gap-4">
               <img
                 src="/assets/generated/wrapper-ai-logo.dim_512x512.png"
-                alt="Shake.com Logo"
+                alt="Shake AI Logo"
                 className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl"
               />
               <div className="flex flex-col">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                  Shake.com
+                  Shake AI
                 </h1>
                 <span className="text-xs text-muted-foreground font-normal">
                   AI-Powered Assistant
@@ -105,7 +80,7 @@ export default function LoginScreen() {
             <div className="mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
               <Sparkles className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl sm:text-3xl">Welcome to Shake.com</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl">Welcome to Shake AI</CardTitle>
             <CardDescription className="text-base">
               Sign in with Internet Identity to access your AI assistant dashboard, chat, and all features.
             </CardDescription>
@@ -142,7 +117,7 @@ export default function LoginScreen() {
 
             <div className="text-center text-sm text-muted-foreground space-y-2">
               <p>
-                Shake.com uses Internet Identity for secure, passwordless authentication.
+                Shake AI uses Internet Identity for secure, passwordless authentication.
               </p>
               <p className="text-xs">
                 Your data is private and stored on the Internet Computer blockchain.
@@ -156,7 +131,7 @@ export default function LoginScreen() {
       <footer className="border-t border-border py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Shake.com. Built with ❤️ using{' '}
+            © {new Date().getFullYear()} Shake AI. Built with ❤️ using{' '}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
                 window.location.hostname

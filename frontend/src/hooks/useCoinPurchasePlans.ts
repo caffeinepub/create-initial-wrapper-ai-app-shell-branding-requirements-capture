@@ -13,6 +13,7 @@ export function useCoinPurchasePlans() {
       return actor.listCoinPurchasePlans();
     },
     enabled: !!actor && !actorFetching,
+    staleTime: 5 * 60 * 1000, // Cache plans for 5 minutes
     retry: false,
   });
 }

@@ -1,34 +1,34 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "A web app (PWA) called Shake.com. The user wants the app name updated to 'Shake.com' across the app title, browser tab, and logo.",
+  "summary": "Shake AI app with Stripe payment integration and coin recharge system. Users can purchase coin packages (100 coins = $1.99, 500 coins = $7.99, 1000 coins = $14.99) to unlock AI features and premium functionality. Real Stripe live mode integration (not demo/test).",
   "architectural_notes": [
-    "App is a PWA (Progressive Web App) deployable to mobile home screens"
+    "Stripe API keys (Publishable Key and Secret Key) must be configured by the user in settings for real payments to work"
   ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-browser-tab-title-and-all-html-meta-tags-including-apple-mobile-web-app-title-to-use-shake-com-instead-of-the-current-app-name",
-      "title": "Update the browser tab title and all HTML meta tags (including Apple mobile web app title) to use 'Shake.com' instead of the current app name.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-pwa-manifest-frontend-public-manifest-json-so-that-name-and-short-name-fields-are-both-set-to-shake-com",
-      "title": "Update the PWA manifest (frontend/public/manifest.json) so that 'name' and 'short_name' fields are both set to 'Shake.com'.",
+      "id": "feature-update-the-frontend-coinpurchasedialog-to-display-the-three-real-coin-packages-100-1-99-500-7-99-1000-14-99-redirect-to-a-live-stripe-checkout-session-when-a-package-is-selected-and-handle-the-success-cancel-return-flows-by-crediting-coins-and-updating-the-displayed-balance",
+      "title": "Update the frontend CoinPurchaseDialog to display the three real coin packages (100/$1.99, 500/$7.99, 1000/$14.99), redirect to a live Stripe checkout session when a package is selected, and handle the success/cancel return flows by crediting coins and updating the displayed balance.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-all-visible-logo-text-app-name-labels-and-header-sidebar-branding-throughout-the-frontend-ui-to-display-shake-com-instead-of-the-previous-app-name-wrapper-ai",
-      "title": "Update all visible logo text, app name labels, and header/sidebar branding throughout the frontend UI to display 'Shake.com' instead of the previous app name ('Wrapper AI').",
+      "id": "feature-ensure-the-frontend-environment-configuration-supports-real-live-mode-stripe-publishable-key-via-the-vite-stripe-publishable-key-environment-variable-update-frontend-env-example-to-document-that-only-live-mode-keys-should-be-used",
+      "title": "Ensure the frontend environment configuration supports real (live-mode) Stripe publishable key via the VITE_STRIPE_PUBLISHABLE_KEY environment variable. Update frontend/.env.example to document that only live-mode keys should be used.",
       "reqIds": [
         "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-per-user-coin-transaction-history-entry-for-every-coin-purchase-recording-the-plan-id-coin-amount-credited-stripe-session-id-and-timestamp-expose-this-via-the-existing-transaction-history-backend-method-so-it-appears-in-transactionhistorypanel",
+      "title": "Add a per-user coin transaction history entry for every coin purchase, recording the plan ID, coin amount credited, Stripe session ID, and timestamp. Expose this via the existing transaction history backend method so it appears in TransactionHistoryPanel.",
+      "reqIds": [
+        "REQ-4"
       ],
       "version": 1
     }
@@ -36,13 +36,39 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Change app name to 'Shake.com' across app title, browser tab, and logo",
+      "summary": "Stripe real payment integration (live mode, not demo/test)",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Coin recharge system with packages: 100=$1.99, 500=$7.99, 1000=$14.99",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Coin balance tracking per user account",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Coins used to unlock AI features and premium functionality",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add backend support for coin purchase plans: define three packages (100 coins = $1.99, 500 coins = $7.99, 1000 coins = $14.99) stored in the actor state. Expose methods to list plans, create a Stripe checkout session (live mode), verify a completed Stripe session, and credit coins to the caller's balance upon successful payment.",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Shake.com",
+  "projectName": "Shake AI",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

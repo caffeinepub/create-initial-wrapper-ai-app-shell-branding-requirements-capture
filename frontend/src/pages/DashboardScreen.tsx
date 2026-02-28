@@ -1,6 +1,5 @@
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useCoinBalance } from '../hooks/useCoinBalance';
-import { useTransactionHistory } from '../hooks/useTransactionHistory';
 import { useGetCallerUserProfile } from '../hooks/useProfile';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -78,10 +77,10 @@ export default function DashboardScreen() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-            Welcome back, {displayName}! 👋
+            Welcome to Shake AI, {displayName}! 👋
           </h1>
           <p className="text-muted-foreground mt-1">
-            Here's your Shake.com dashboard overview
+            Here's your Shake AI dashboard overview
           </p>
         </div>
         <Badge variant="secondary" className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5">
@@ -169,7 +168,7 @@ export default function DashboardScreen() {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            Getting Started with Shake.com
+            Getting Started with Shake AI
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">

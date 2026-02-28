@@ -1,64 +1,95 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Update app name to Shake.com",
+  "title": "Add Real Stripe Payment & Coin Recharge System - Frontend",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Update the browser tab title and all HTML meta tags (including Apple mobile web app title) to use 'Shake.com' instead of the current app name",
-      "acceptanceCriteria": [
-        "The browser tab displays 'Shake.com' as the page title",
-        "The <title> tag in frontend/index.html reads 'Shake.com'",
-        "Apple mobile web app meta tag name is updated to 'Shake.com'"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/index.html",
-          "operation": "modify",
-          "description": "Update the <title> tag content from the current app name to 'Shake.com'. Update the apple-mobile-web-app-title meta tag content to 'Shake.com'. Ensure all other meta tags remain unchanged."
-        }
-      ]
-    },
-    {
       "id": "REQ-2",
-      "summary": "Update the PWA manifest so that 'name' and 'short_name' fields are both set to 'Shake.com'",
+      "summary": "Update CoinPurchaseDialog to display three real coin packages, redirect to live Stripe checkout, and handle success/cancel flows with coin crediting",
       "acceptanceCriteria": [
-        "manifest.json 'name' field is 'Shake.com'",
-        "manifest.json 'short_name' field is 'Shake.com'",
-        "When installed as a PWA, the home screen icon label reads 'Shake.com'"
+        "CoinPurchaseDialog shows all three packages with correct coin amounts and prices.",
+        "Clicking a package triggers a backend call to create a live Stripe checkout session and redirects the user to the Stripe-hosted payment page.",
+        "PaymentSuccessScreen parses the session ID and plan ID from the URL, calls the backend to verify and credit coins, then shows success with updated balance.",
+        "PaymentFailureScreen informs the user that no charge was made and provides a retry option.",
+        "Coin balance in the header updates immediately after a successful purchase."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/manifest.json",
+          "path": "frontend/src/components/CoinPurchaseDialog.tsx",
           "operation": "modify",
-          "description": "Update the 'name' field from 'Wrapper AI' to 'Shake.com'. Update the 'short_name' field from 'Wrapper AI' to 'Shake.com'. Keep all other manifest properties (theme_color, background_color, display, icons) unchanged."
+          "description": "Update the dialog to fetch and display the three real coin purchase plans (100/$1.99, 500/$7.99, 1000/$14.99) using useCoinPurchasePlans hook. When a package is selected, call useCreateStripeCheckoutSession to initiate a live Stripe checkout session, then redirect to the returned Stripe URL using window.location.href. Validate that the session URL is non-empty before redirecting. Display loading state during the checkout session creation and handle errors appropriately. Remove any demo or test mode references."
+        },
+        {
+          "path": "frontend/src/hooks/useCreateStripeCheckoutSession.ts",
+          "operation": "modify",
+          "description": "Update the mutation to call the backend createCheckoutSession method with a ShoppingItem array constructed from the selected coin plan. Convert the plan price to cents (smallest currency unit). Construct success and cancel URLs using the current window location with hash-based paths: successUrl = `${baseUrl}/#/payment-success?sessionId={sessionId}&planId={planId}` and cancelUrl = `${baseUrl}/#/payment-failure`. Parse the JSON response from the backend and validate that the returned session includes a non-empty url field. If missing, throw a user-friendly error. Return the parsed CheckoutSession object."
+        },
+        {
+          "path": "frontend/src/pages/PaymentSuccessScreen.tsx",
+          "operation": "modify",
+          "description": "Parse the sessionId and planId parameters from the URL hash (using urlParams utility). Call usePurchaseCoinsWithStripe mutation with the parsed sessionId and planId to verify the payment and credit coins. Display a processing spinner while the mutation is in progress. On success, show a success message with the credited coin amount and updated balance. On error, display an appropriate error message with a retry button. Include a 'Go to Dashboard' button that navigates to the dashboard. Ensure coin balance queries are invalidated after successful crediting so the header balance updates immediately."
+        },
+        {
+          "path": "frontend/src/pages/PaymentFailureScreen.tsx",
+          "operation": "modify",
+          "description": "Update the failure screen to clearly inform the user that the payment was cancelled and no charge was made. Provide a 'Try Again' button that reopens the CoinPurchaseDialog (or navigates to the dashboard with a trigger to open the dialog). Include a 'Go to Dashboard' button for easy navigation back to the main app. Display a friendly, reassuring message that the user can retry their purchase at any time."
+        },
+        {
+          "path": "frontend/src/hooks/usePurchaseCoinsWithStripe.ts",
+          "operation": "modify",
+          "description": "Ensure the mutation correctly calls the backend purchaseCoinsWithStripe method with the stripeSessionId and planId. On success, invalidate the coin balance, coin purchase plans, and transaction history queries using the centralized query keys from coinQueryKeys. Handle errors gracefully and return user-friendly error messages. Ensure the mutation returns the new coin balance for display in the success screen."
+        },
+        {
+          "path": "frontend/src/hooks/useCoinPurchasePlans.ts",
+          "operation": "modify",
+          "description": "Ensure the hook correctly fetches the list of coin purchase plans from the backend listCoinPurchasePlans method. Map the returned CoinPurchasePlan array to display-friendly objects with formatted prices (e.g., '$1.99' from price string). Cache the results appropriately using React Query with the query key from coinQueryKeys. Return loading, error, and data states for the UI to consume."
+        },
+        {
+          "path": "frontend/src/components/AuthenticatedLayout.tsx",
+          "operation": "modify",
+          "description": "Verify that the CoinPurchaseDialog state management and opening/closing logic is correctly wired. Ensure the dialog can be triggered from multiple places in the app (header, coin gates, payment failure retry). Confirm that coin balance in the header updates reactively when queries are invalidated after a successful purchase. Add any missing state or props needed to support the updated coin purchase flow."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Update all visible logo text, app name labels, and header/sidebar branding throughout the frontend UI to display 'Shake.com' instead of the previous app name ('Wrapper AI')",
+      "summary": "Update frontend environment configuration to support real Stripe live-mode publishable key",
       "acceptanceCriteria": [
-        "The sidebar/header logo text shows 'Shake.com'",
-        "No instance of 'Wrapper AI' remains visible in the UI",
-        "The login screen (if it shows an app name) displays 'Shake.com'",
-        "The dashboard page title/heading reflects 'Shake.com'"
+        "frontend/.env.example clearly documents VITE_STRIPE_PUBLISHABLE_KEY as a required live-mode key.",
+        "The app uses VITE_STRIPE_PUBLISHABLE_KEY for all Stripe.js initialization.",
+        "No test/demo key placeholders remain in the default env files."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/AuthenticatedLayout.tsx",
+          "path": "frontend/.env.example",
           "operation": "modify",
-          "description": "Replace all occurrences of 'Wrapper AI' with 'Shake.com' in the sidebar header/logo section and any other visible branding text within the authenticated layout component."
+          "description": "Update the VITE_STRIPE_PUBLISHABLE_KEY entry to clearly document that only live-mode Stripe publishable keys (starting with pk_live_) should be used. Remove any test key placeholders or references. Add a comment explaining that this key is required for real payment processing and should never be a test/sandbox key. Include a link to Stripe documentation for obtaining live-mode keys if helpful."
         },
         {
-          "path": "frontend/src/pages/LoginScreen.tsx",
+          "path": "frontend/.env",
           "operation": "modify",
-          "description": "Replace all occurrences of 'Wrapper AI' with 'Shake.com' in the login screen UI, including any heading, title, or branding text visible to unauthenticated users."
+          "description": "Update the placeholder VITE_STRIPE_PUBLISHABLE_KEY value to include a comment reminding developers to replace it with their real live-mode Stripe publishable key. Remove any test key values. Ensure the format matches the live-mode key format (pk_live_...)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Display coin purchase transaction history in TransactionHistoryPanel",
+      "acceptanceCriteria": [
+        "A successful coin purchase creates a transaction record with type 'credit', feature name matching the plan (e.g., 'Coin Purchase – 500 coins'), amount, and timestamp.",
+        "TransactionHistoryPanel displays coin purchase transactions alongside AI feature usage transactions.",
+        "Transaction history is ordered with most recent first."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/TransactionHistoryPanel.tsx",
+          "operation": "modify",
+          "description": "Verify that the component correctly fetches and displays all transaction types including 'credit' transactions from coin purchases. Ensure the transaction list includes coin purchase records with their feature names (e.g., 'Coin Purchase – 100 coins', 'Coin Purchase – 500 coins', 'Coin Purchase – 1000 coins'). Confirm that the display shows credit amounts with a '+' prefix, timestamps in a user-friendly format, and the running balance after each transaction. Ensure transactions are sorted with most recent first. Add any missing UI polish for distinguishing credit transactions from debit/feature usage transactions (e.g., green color for credits)."
         },
         {
-          "path": "frontend/src/pages/DashboardScreen.tsx",
+          "path": "frontend/src/hooks/useTransactionHistory.ts",
           "operation": "modify",
-          "description": "Replace all occurrences of 'Wrapper AI' with 'Shake.com' in the dashboard page title, welcome message, or any other visible branding text."
+          "description": "Ensure the hook correctly fetches the complete transaction history from the backend getTransactionHistory method, including all transaction types (credit, debit, featureUsage). Verify that the query key from coinQueryKeys is used for consistent cache invalidation. Confirm that the hook properly handles loading, error, and empty states. Ensure the data is returned in the correct format for the TransactionHistoryPanel component to display."
         }
       ]
     }

@@ -29,9 +29,11 @@ const VALID_VIEWS: View[] = [
 
 export function useHashRoute() {
   const getViewFromHash = (): View => {
+    // Strip leading '#' then take only the path part before '?'
     const hash = window.location.hash.slice(1);
-    if (VALID_VIEWS.includes(hash as View)) {
-      return hash as View;
+    const pathPart = hash.split('?')[0];
+    if (VALID_VIEWS.includes(pathPart as View)) {
+      return pathPart as View;
     }
     return 'dashboard';
   };

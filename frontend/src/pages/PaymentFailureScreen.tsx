@@ -1,4 +1,4 @@
-import { XCircle, ArrowLeft, ShoppingCart } from 'lucide-react';
+import { XCircle, ArrowLeft, ShoppingCart, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import type { RouteKey } from '../hooks/useHashRoute';
@@ -18,13 +18,19 @@ export default function PaymentFailureScreen({ onNavigate, onBuyCoins }: Payment
           </div>
           <CardTitle className="text-2xl text-destructive">Payment Cancelled</CardTitle>
           <CardDescription>
-            Your payment was cancelled or failed. No charges were made to your account.
+            Your payment was cancelled. <strong>No charges were made</strong> to your account.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <div className="p-4 rounded-lg bg-muted text-sm text-muted-foreground">
-            If you experienced an issue during checkout, please try again. Your coins balance has not been affected.
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-muted text-sm text-muted-foreground text-left">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-amber-500" />
+            <div>
+              <p className="font-medium text-foreground mb-1">Your balance is safe</p>
+              <p>
+                No coins were deducted and no payment was processed. You can retry your purchase at any time.
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -34,7 +40,7 @@ export default function PaymentFailureScreen({ onNavigate, onBuyCoins }: Payment
                 className="w-full gap-2"
               >
                 <ShoppingCart className="h-4 w-4" />
-                Try Again
+                Try Again — Buy Coins
               </Button>
             )}
             <Button
@@ -46,6 +52,10 @@ export default function PaymentFailureScreen({ onNavigate, onBuyCoins }: Payment
               Return to Dashboard
             </Button>
           </div>
+
+          <p className="text-xs text-muted-foreground">
+            Need help? Contact support if you experienced an unexpected issue during checkout.
+          </p>
         </CardContent>
       </Card>
     </div>

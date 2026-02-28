@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { ShoppingItem } from '../backend';
-import type { CoinPurchasePlan } from '../backend';
+import type { ShoppingItem, CoinPurchasePlan } from '../backend';
 
 export type CheckoutSession = {
   id: string;
@@ -16,19 +15,20 @@ export function useCreateStripeCheckoutSession() {
       if (!actor) throw new Error('Actor not available');
 
       const baseUrl = `${window.location.protocol}//${window.location.host}`;
+      // Use hash-based routing with query params for success/cancel URLs
       const successUrl = `${baseUrl}/#payment-success?session_id={CHECKOUT_SESSION_ID}&plan_id=${plan.id}`;
       const cancelUrl = `${baseUrl}/#payment-failure`;
 
-      // Convert INR price string like "₹99" to paise (cents equivalent)
-      // Parse numeric value from price string
+      // Parse numeric value from price string (e.g. "₹99" → 99, "₹449" → 449)
       const priceNumeric = parseFloat(plan.price.replace(/[^0-9.]/g, ''));
-      const priceInPaise = Math.round(priceNumeric * 100);
+      // Convert to smallest currency unit (paise for INR)
+      const priceInSmallestUnit = Math.round(priceNumeric * 100);
 
       const shoppingItem: ShoppingItem = {
         productName: plan.name,
-        productDescription: `${Number(plan.coinAmount)} coins for your Wrapper AI account`,
+        productDescription: `${Number(plan.coinAmount)} coins for your Shake AI account`,
         quantity: BigInt(1),
-        priceInCents: BigInt(priceInPaise),
+        priceInCents: BigInt(priceInSmallestUnit),
         currency: plan.currencyCode.toLowerCase(),
       };
 
@@ -36,7 +36,7 @@ export function useCreateStripeCheckoutSession() {
       const session = JSON.parse(result) as CheckoutSession;
 
       if (!session?.url) {
-        throw new Error('Stripe session missing url');
+        throw new Error('Payment session could not be created. Please try again or contact support.');
       }
 
       return session;

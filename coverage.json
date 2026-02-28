@@ -1,64 +1,91 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-28T05:53:47.398Z",
+  "generatedAt": "2026-02-28T10:17:02.568Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
+    "total": 4,
     "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Update the browser tab title and all HTML meta tags (including Apple mobile web app title) to use 'Shake.com' instead of the current app name.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/index.html"
-        ],
-        "matchedFiles": [
-          "frontend/index.html"
-        ]
+        "summary": "Add backend support for coin purchase plans: define three packages (100 coins = $1.99, 500 coins = $7.99, 1000 coins = $14.99) stored in the actor state. Expose methods to list plans, create a Stripe checkout session (live mode), verify a completed Stripe session, and credit coins to the caller's balance upon successful payment.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Update the PWA manifest (frontend/public/manifest.json) so that 'name' and 'short_name' fields are both set to 'Shake.com'.",
+        "summary": "Update the frontend CoinPurchaseDialog to display the three real coin packages (100/$1.99, 500/$7.99, 1000/$14.99), redirect to a live Stripe checkout session when a package is selected, and handle the success/cancel return flows by crediting coins and updating the displayed balance.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/manifest.json"
+          "frontend/src/components/CoinPurchaseDialog.tsx",
+          "frontend/src/hooks/useCreateStripeCheckoutSession.ts",
+          "frontend/src/pages/PaymentSuccessScreen.tsx",
+          "frontend/src/pages/PaymentFailureScreen.tsx",
+          "frontend/src/hooks/usePurchaseCoinsWithStripe.ts",
+          "frontend/src/hooks/useCoinPurchasePlans.ts",
+          "frontend/src/components/AuthenticatedLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/public/manifest.json"
+          "frontend/src/components/CoinPurchaseDialog.tsx",
+          "frontend/src/hooks/useCreateStripeCheckoutSession.ts",
+          "frontend/src/pages/PaymentSuccessScreen.tsx",
+          "frontend/src/pages/PaymentFailureScreen.tsx",
+          "frontend/src/hooks/usePurchaseCoinsWithStripe.ts",
+          "frontend/src/hooks/useCoinPurchasePlans.ts",
+          "frontend/src/components/AuthenticatedLayout.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Update all visible logo text, app name labels, and header/sidebar branding throughout the frontend UI to display 'Shake.com' instead of the previous app name ('Wrapper AI').",
+        "summary": "Ensure the frontend environment configuration supports real (live-mode) Stripe publishable key via the VITE_STRIPE_PUBLISHABLE_KEY environment variable. Update frontend/.env.example to document that only live-mode keys should be used.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/AuthenticatedLayout.tsx",
-          "frontend/src/pages/LoginScreen.tsx",
-          "frontend/src/pages/DashboardScreen.tsx"
+          "frontend/.env.example",
+          "frontend/.env"
         ],
         "matchedFiles": [
-          "frontend/src/components/AuthenticatedLayout.tsx",
-          "frontend/src/pages/LoginScreen.tsx",
-          "frontend/src/pages/DashboardScreen.tsx"
+          "frontend/.env.example",
+          "frontend/.env"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Add a per-user coin transaction history entry for every coin purchase, recording the plan ID, coin amount credited, Stripe session ID, and timestamp. Expose this via the existing transaction history backend method so it appears in TransactionHistoryPanel.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/TransactionHistoryPanel.tsx",
+          "frontend/src/hooks/useTransactionHistory.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/TransactionHistoryPanel.tsx",
+          "frontend/src/hooks/useTransactionHistory.ts"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/index.html",
-    "frontend/public/manifest.json",
+    "frontend/.env",
+    "frontend/.env.example",
     "frontend/src/components/AuthenticatedLayout.tsx",
-    "frontend/src/pages/DashboardScreen.tsx",
-    "frontend/src/pages/LoginScreen.tsx",
+    "frontend/src/components/CoinPurchaseDialog.tsx",
+    "frontend/src/components/TransactionHistoryPanel.tsx",
+    "frontend/src/hooks/useCoinPurchasePlans.ts",
+    "frontend/src/hooks/useCreateStripeCheckoutSession.ts",
+    "frontend/src/hooks/useHashRoute.ts",
+    "frontend/src/hooks/usePurchaseCoinsWithStripe.ts",
+    "frontend/src/hooks/useTransactionHistory.ts",
+    "frontend/src/pages/PaymentFailureScreen.tsx",
+    "frontend/src/pages/PaymentSuccessScreen.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

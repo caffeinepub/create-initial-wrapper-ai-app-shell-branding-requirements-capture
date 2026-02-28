@@ -15,12 +15,15 @@ export function usePurchaseCoinsWithStripe() {
       planId: bigint;
     }): Promise<bigint> => {
       if (!actor) throw new Error('Actor not available');
-      const result = await actor.purchaseCoinsWithStripe(stripeSessionId, planId);
-      return result;
+      // Returns the new coin balance after crediting
+      const newBalance = await actor.purchaseCoinsWithStripe(stripeSessionId, planId);
+      return newBalance;
     },
     onSuccess: () => {
+      // Invalidate all coin-related queries so the UI updates immediately
       queryClient.invalidateQueries({ queryKey: coinQueryKeys.balance });
       queryClient.invalidateQueries({ queryKey: coinQueryKeys.transactions });
+      queryClient.invalidateQueries({ queryKey: coinQueryKeys.plans });
     },
   });
 }

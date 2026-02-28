@@ -40,7 +40,7 @@ export default function AuthenticatedLayout() {
   const [showPurchaseDialog, setShowPurchaseDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const balance = coinBalance ?? 0;
+  const balance = Number(coinBalance ?? 0);
   const showLowBalanceWarning = balance > 0 && balance < LOW_BALANCE_THRESHOLD;
 
   const handleLogout = async () => {
@@ -102,10 +102,10 @@ export default function AuthenticatedLayout() {
           <div className="flex items-center gap-2">
             <img
               src="/assets/generated/wrapper-ai-logo.dim_512x512.png"
-              alt="Shake.com"
+              alt="Shake AI"
               className="h-8 w-8"
             />
-            <span className="font-bold text-xl hidden sm:inline">Shake.com</span>
+            <span className="font-bold text-xl hidden sm:inline">Shake AI</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -146,15 +146,19 @@ export default function AuthenticatedLayout() {
               <LinkShare />
             </div>
 
-            {/* Coin Balance */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary">
+            {/* Coin Balance — clickable to open purchase dialog */}
+            <button
+              onClick={() => setShowPurchaseDialog(true)}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer"
+              title="Buy more coins"
+            >
               <Coins className="h-4 w-4" />
               {balanceLoading ? (
                 <span className="text-sm font-medium">...</span>
               ) : (
-                <span className="text-sm font-medium">{balance}</span>
+                <span className="text-sm font-medium">{balance.toLocaleString()}</span>
               )}
-            </div>
+            </button>
 
             {/* Low Balance Warning */}
             {showLowBalanceWarning && (
@@ -165,7 +169,7 @@ export default function AuthenticatedLayout() {
                 className="hidden md:flex gap-2 border-primary/50 text-primary hover:bg-primary/10"
               >
                 <Coins className="h-4 w-4" />
-                Upgrade
+                Recharge
               </Button>
             )}
 
@@ -196,8 +200,14 @@ export default function AuthenticatedLayout() {
         {mobileMenuOpen && (
           <div className="lg:hidden border-t bg-background">
             <nav className="container py-4 px-4 space-y-1">
-              {/* Coin Balance (Mobile) */}
-              <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-primary/10 text-primary mb-2">
+              {/* Coin Balance (Mobile) — clickable */}
+              <button
+                onClick={() => {
+                  setShowPurchaseDialog(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-primary/10 text-primary mb-2 hover:bg-primary/20 transition-colors"
+              >
                 <div className="flex items-center gap-2">
                   <Coins className="h-4 w-4" />
                   <span className="text-sm font-medium">Balance:</span>
@@ -205,9 +215,9 @@ export default function AuthenticatedLayout() {
                 {balanceLoading ? (
                   <span className="text-sm font-medium">...</span>
                 ) : (
-                  <span className="text-sm font-bold">{balance} coins</span>
+                  <span className="text-sm font-bold">{balance.toLocaleString()} coins</span>
                 )}
-              </div>
+              </button>
 
               {/* Share (Mobile) */}
               <div className="px-1 py-1">
@@ -251,6 +261,20 @@ export default function AuthenticatedLayout() {
                 </Button>
               )}
 
+              {/* Buy Coins (Mobile) */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowPurchaseDialog(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full justify-start gap-2 border-primary/50 text-primary hover:bg-primary/10"
+              >
+                <Coins className="h-4 w-4" />
+                Buy Coins
+              </Button>
+
               {/* Logout (Mobile) */}
               <Button
                 variant="ghost"
@@ -273,7 +297,7 @@ export default function AuthenticatedLayout() {
       <footer className="border-t bg-muted/50 py-6 mt-auto">
         <div className="container px-4 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Shake.com. Built with ❤️ using{' '}
+            © {new Date().getFullYear()} Shake AI. Built with ❤️ using{' '}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
                 window.location.hostname
@@ -289,7 +313,10 @@ export default function AuthenticatedLayout() {
       </footer>
 
       {/* Coin Purchase Dialog */}
-      <CoinPurchaseDialog open={showPurchaseDialog} onOpenChange={setShowPurchaseDialog} />
+      <CoinPurchaseDialog
+        open={showPurchaseDialog}
+        onOpenChange={setShowPurchaseDialog}
+      />
     </div>
   );
 }

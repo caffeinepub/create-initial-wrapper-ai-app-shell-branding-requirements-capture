@@ -10,6 +10,7 @@ export function useTransactionHistory() {
     queryKey: coinQueryKeys.transactions,
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
+      // Backend returns newest-first ordered list
       return actor.getTransactionHistory();
     },
     enabled: !!actor && !actorFetching,

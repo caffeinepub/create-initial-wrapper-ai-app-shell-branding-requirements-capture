@@ -13,8 +13,6 @@ import OutCall "http-outcalls/outcall";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
 
-
-
 actor {
   public type Language = {
     #en;
@@ -279,7 +277,11 @@ actor {
     };
   };
 
-  public func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
+  // Requires user auth to prevent unauthenticated abuse of HTTP outcalls
+  public shared ({ caller }) func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: You must be logged in to check session status");
+    };
     await Stripe.getSessionStatus(getStripeConfiguration(), sessionId, transform);
   };
 
@@ -828,6 +830,7 @@ actor {
     let amountPaid = await verifyStripePayment(stripeSessionId);
 
     let plan = switch (INDIAN_COIN_PLANS.find(func(p) { p.id == planId })) {
+      case (null) { Runtime.trap("Invalid coin purchase plan ID. Please check available plans."); };
       case (?p) {
         if (p.coinAmount == amountPaid) {
           p;
@@ -835,7 +838,6 @@ actor {
           Runtime.trap("Paid amount does not match coin plan");
         };
       };
-      case (null) { Runtime.trap("Invalid coin purchase plan ID. Please check available plans."); };
     };
 
     let currentBalance = getCoinBalanceInternal(caller);
