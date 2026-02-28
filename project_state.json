@@ -1,30 +1,32 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "A website with a link sharing feature, including a Copy Link button and social share options (WhatsApp, Facebook, Twitter). Share button placed in a visible location.",
-  "architectural_notes": [],
+  "summary": "A web app (PWA) called Shake.com. The user wants the app name updated to 'Shake.com' across the app title, browser tab, and logo.",
+  "architectural_notes": [
+    "App is a PWA (Progressive Web App) deployable to mobile home screens"
+  ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-add-a-link-share-component-that-allows-users-to-copy-the-current-page-url-to-their-clipboard-via-a-copy-link-button-with-visual-confirmation-feedback-e-g-tooltip-or-button-text-change-after-copying",
-      "title": "Add a Link Share component that allows users to copy the current page URL to their clipboard via a 'Copy Link' button, with visual confirmation feedback (e.g., tooltip or button text change) after copying.",
+      "id": "feature-update-the-browser-tab-title-and-all-html-meta-tags-including-apple-mobile-web-app-title-to-use-shake-com-instead-of-the-current-app-name",
+      "title": "Update the browser tab title and all HTML meta tags (including Apple mobile web app title) to use 'Shake.com' instead of the current app name.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-social-share-buttons-for-whatsapp-facebook-and-twitter-x-that-open-the-respective-share-dialogs-in-a-new-tab-with-the-current-page-url-pre-filled-as-the-shared-link",
-      "title": "Add social share buttons for WhatsApp, Facebook, and Twitter/X that open the respective share dialogs in a new tab with the current page URL pre-filled as the shared link.",
+      "id": "feature-update-the-pwa-manifest-frontend-public-manifest-json-so-that-name-and-short-name-fields-are-both-set-to-shake-com",
+      "title": "Update the PWA manifest (frontend/public/manifest.json) so that 'name' and 'short_name' fields are both set to 'Shake.com'.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-place-the-link-share-component-copy-link-social-share-buttons-in-a-prominent-visible-location-such-as-the-site-header-or-a-floating-share-bar-so-it-is-accessible-from-any-page",
-      "title": "Place the Link Share component (Copy Link + social share buttons) in a prominent, visible location such as the site header or a floating share bar so it is accessible from any page.",
+      "id": "feature-update-all-visible-logo-text-app-name-labels-and-header-sidebar-branding-throughout-the-frontend-ui-to-display-shake-com-instead-of-the-previous-app-name-wrapper-ai",
+      "title": "Update all visible logo text, app name labels, and header/sidebar branding throughout the frontend UI to display 'Shake.com' instead of the previous app name ('Wrapper AI').",
       "reqIds": [
         "REQ-3"
       ],
@@ -34,13 +36,13 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Add link sharing feature with Copy Link button and social share options (WhatsApp, Facebook, Twitter)",
+      "summary": "Change app name to 'Shake.com' across app title, browser tab, and logo",
       "reqIds": [],
       "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Wrapper AI",
+  "projectName": "Shake.com",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

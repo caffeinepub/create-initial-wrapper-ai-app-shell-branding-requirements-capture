@@ -1,13 +1,13 @@
 {
-  "frontend/index.html": "HTML entry point with updated title and meta description for Wrapper AI project definition tool.",
+  "frontend/index.html": "HTML entry point with PWA manifest link, theme-color meta tag, Apple mobile web app meta tags updated to \"Shake.com\", and inline service worker registration script in the body.",
   "frontend/src/index.css": "Global styles with warm coral/orange OKLCH color system, Space Grotesk display font, and Inter body font for a distinctive non-blue/purple aesthetic.",
-  "frontend/src/App.tsx": "Root application component that creates a stable QueryClient instance, wraps the app with QueryClientProvider and InternetIdentityProvider, renders AppContent, and includes Toaster for notifications.",
+  "frontend/src/App.tsx": "Root application component wrapping the app with QueryClientProvider and InternetIdentityProvider, rendering AppContent, Toaster, and the new PwaInstallBanner overlay.",
   "frontend/src/pages/ProjectDefinitionScreen.tsx": "Project definition form with fields for goal, target users, key features, and constraints; displays structured summary on submit with clear/reset functionality.",
   "frontend/tailwind.config.js": "Tailwind configuration extended with Space Grotesk display font family and additional border radius utilities.",
   "frontend/src/components/AppContent.tsx": "Authentication gate component with enhanced error handling, console logging for state changes, fallback error UI, and proper loading states to prevent blank screens during authentication.",
-  "frontend/src/components/AuthenticatedLayout.tsx": "Main authenticated layout with header navigation, coin balance display, admin panel link, and the new LinkShare component integrated into both the desktop header (right section) and the mobile menu.",
-  "frontend/src/pages/LoginScreen.tsx": "Login screen with comprehensive error handling, console logging for debugging, popup blocker detection, retry functionality, and automatic redirect to dashboard after successful authentication.",
-  "frontend/src/pages/DashboardScreen.tsx": "Dashboard screen displaying authentication status card with user principal ID and display name, coin balance with loading states, six feature cards, transaction history, and getting started information.",
+  "frontend/src/components/AuthenticatedLayout.tsx": "Main authenticated layout with header navigation showing \"Shake.com\" branding, coin balance display, admin panel link, LinkShare component, and footer updated to \"Shake.com\".",
+  "frontend/src/pages/LoginScreen.tsx": "Login screen with \"Shake.com\" branding throughout, error handling, popup blocker detection, retry functionality, and automatic redirect to dashboard after successful authentication.",
+  "frontend/src/pages/DashboardScreen.tsx": "Dashboard screen displaying \"Shake.com\" branding in the welcome message and getting started section, with authentication status card, coin balance, feature cards, and transaction history.",
   "frontend/src/pages/AIChatScreen.tsx": "AI chat interface with an `ApiKeySetup` component that validates the key format (must start with `gsk_`, min 20 chars) and saves it to localStorage; shows the setup panel when no key is present or when the key is invalid, provides a \"Change API Key\" link, and displays inline error bubbles for API/network errors alongside the existing insufficient-coins alert and CoinPurchaseDialog.",
   "frontend/src/pages/ProfileScreen.tsx": "Profile management screen displaying user's principal, editable display name and avatar URL, save functionality, and logout button.",
   "frontend/src/hooks/useHashRoute.ts": "Hash-based navigation hook managing routing between all views including payment-success, payment-failure, and admin-panel, with a VALID_VIEWS array and exported RouteKey type.",
@@ -60,5 +60,9 @@
   "frontend/src/pages/AdminPanelScreen.tsx": "Admin-only panel that checks isCallerAdmin, shows an access denied alert for non-admins, and provides a form to add coins to any user by principal ID with validation and success/error toasts.",
   "frontend/.env.example": "Environment variable template with VITE_STRIPE_PUBLISHABLE_KEY and the new VITE_GROQ_API_KEY variable (pre-filled with the provided Groq API key) along with documentation for both keys.",
   "frontend/.env": "Environment variables file with Stripe publishable key placeholder and an empty VITE_GROQ_API_KEY (hardcoded key removed; users enter their key directly in the app).",
-  "frontend/src/components/LinkShare.tsx": "New component that renders a Share button in the header; clicking it opens a Popover with a Copy Link button (with 2-second \"Copied!\" feedback) and social share buttons for WhatsApp, Facebook, and Twitter/X that open platform share URLs in a new tab."
+  "frontend/src/components/LinkShare.tsx": "New component that renders a Share button in the header; clicking it opens a Popover with a Copy Link button (with 2-second \"Copied!\" feedback) and social share buttons for WhatsApp, Facebook, and Twitter/X that open platform share URLs in a new tab.",
+  "frontend/public/manifest.json": "PWA web app manifest with Shake.com name and short_name, standalone display mode, dark theme/background colors, and 192x192 and 512x512 icon references.",
+  "frontend/public/sw.js": "Service worker implementing cache-first strategy for static assets and network-first for API/canister calls, with install/activate/fetch event handlers and old cache cleanup.",
+  "frontend/src/hooks/usePwaInstallPrompt.ts": "Custom React hook that captures the beforeinstallprompt event, provides promptInstall and dismissPrompt functions, and detects standalone display mode.",
+  "frontend/src/components/PwaInstallBanner.tsx": "Dismissible bottom-center banner component that appears when the PWA install prompt is available and the app is not already running in standalone mode."
 }

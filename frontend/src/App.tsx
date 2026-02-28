@@ -3,6 +3,7 @@ import { InternetIdentityProvider } from './hooks/useInternetIdentity';
 import AppContent from './components/AppContent';
 import { Toaster } from '@/components/ui/sonner';
 import { useMemo } from 'react';
+import PwaInstallBanner from './components/PwaInstallBanner';
 
 function App() {
   const queryClient = useMemo(
@@ -23,6 +24,7 @@ function App() {
       <InternetIdentityProvider>
         <AppContent />
         <Toaster />
+        <PwaInstallBanner />
       </InternetIdentityProvider>
     </QueryClientProvider>
   );

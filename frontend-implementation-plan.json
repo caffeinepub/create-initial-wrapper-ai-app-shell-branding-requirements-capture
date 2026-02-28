@@ -1,53 +1,64 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add Link Sharing Feature with Copy Link and Social Share Options",
+  "title": "Update app name to Shake.com",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Create a LinkShare component with a 'Copy Link' button that copies the current page URL to the clipboard and displays visual confirmation feedback",
+      "summary": "Update the browser tab title and all HTML meta tags (including Apple mobile web app title) to use 'Shake.com' instead of the current app name",
       "acceptanceCriteria": [
-        "A 'Copy Link' button is visible on the page",
-        "Clicking it copies the current page URL to the clipboard",
-        "Visual feedback is shown after successful copy (e.g., button label changes to 'Copied!' for 2 seconds)"
+        "The browser tab displays 'Shake.com' as the page title",
+        "The <title> tag in frontend/index.html reads 'Shake.com'",
+        "Apple mobile web app meta tag name is updated to 'Shake.com'"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/LinkShare.tsx",
-          "operation": "create",
-          "description": "Create a LinkShare component that includes a 'Copy Link' button using the Clipboard API (navigator.clipboard.writeText) to copy window.location.href. The button should show visual feedback by changing its text to 'Copied!' for 2 seconds after successful copy, then reverting to 'Copy Link'. Use shadcn/ui Button component and lucide-react icons for consistency with the existing UI. Verify the shadcn/ui component's usage instructions before implementing."
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Update the <title> tag content from the current app name to 'Shake.com'. Update the apple-mobile-web-app-title meta tag content to 'Shake.com'. Ensure all other meta tags remain unchanged."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add social share buttons for WhatsApp, Facebook, and Twitter/X to the LinkShare component that open share dialogs with the current page URL",
+      "summary": "Update the PWA manifest so that 'name' and 'short_name' fields are both set to 'Shake.com'",
       "acceptanceCriteria": [
-        "Separate share buttons for WhatsApp, Facebook, and Twitter/X are visible",
-        "Clicking each button opens the corresponding platform's share URL in a new browser tab",
-        "The current page URL is pre-populated in the share dialog for each platform"
+        "manifest.json 'name' field is 'Shake.com'",
+        "manifest.json 'short_name' field is 'Shake.com'",
+        "When installed as a PWA, the home screen icon label reads 'Shake.com'"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/LinkShare.tsx",
+          "path": "frontend/public/manifest.json",
           "operation": "modify",
-          "description": "Add three social share buttons (WhatsApp, Facebook, Twitter/X) to the LinkShare component. Each button should construct the appropriate share URL using the current page URL (window.location.href): WhatsApp uses 'https://wa.me/?text=' + encodeURIComponent(url), Facebook uses 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), and Twitter/X uses 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(url). Open share URLs using window.open(shareUrl, '_blank', 'noopener,noreferrer'). Style the buttons with platform-appropriate colors and icons using lucide-react or simple text labels. Verify the shadcn/ui component's usage instructions before implementing."
+          "description": "Update the 'name' field from 'Wrapper AI' to 'Shake.com'. Update the 'short_name' field from 'Wrapper AI' to 'Shake.com'. Keep all other manifest properties (theme_color, background_color, display, icons) unchanged."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Integrate the LinkShare component into the AuthenticatedLayout header so it is visible and accessible from any page",
+      "summary": "Update all visible logo text, app name labels, and header/sidebar branding throughout the frontend UI to display 'Shake.com' instead of the previous app name ('Wrapper AI')",
       "acceptanceCriteria": [
-        "The share component is visible without scrolling on all major pages",
-        "The component does not obstruct primary content",
-        "The component is responsive and works on both mobile and desktop layouts"
+        "The sidebar/header logo text shows 'Shake.com'",
+        "No instance of 'Wrapper AI' remains visible in the UI",
+        "The login screen (if it shows an app name) displays 'Shake.com'",
+        "The dashboard page title/heading reflects 'Shake.com'"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/AuthenticatedLayout.tsx",
           "operation": "modify",
-          "description": "Import and add the LinkShare component to the sticky header section of AuthenticatedLayout, positioning it between the navigation items and the coin balance display. Ensure the component is visible on both desktop (inline in the header) and mobile (within the mobile menu if space is constrained). Use flexbox or grid layout to maintain proper spacing and prevent obstruction of existing header elements. The component should be accessible from all authenticated pages without requiring scrolling."
+          "description": "Replace all occurrences of 'Wrapper AI' with 'Shake.com' in the sidebar header/logo section and any other visible branding text within the authenticated layout component."
+        },
+        {
+          "path": "frontend/src/pages/LoginScreen.tsx",
+          "operation": "modify",
+          "description": "Replace all occurrences of 'Wrapper AI' with 'Shake.com' in the login screen UI, including any heading, title, or branding text visible to unauthenticated users."
+        },
+        {
+          "path": "frontend/src/pages/DashboardScreen.tsx",
+          "operation": "modify",
+          "description": "Replace all occurrences of 'Wrapper AI' with 'Shake.com' in the dashboard page title, welcome message, or any other visible branding text."
         }
       ]
     }

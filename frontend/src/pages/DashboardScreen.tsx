@@ -1,284 +1,184 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { MessageSquare, User, Sparkles, ArrowRight, Video, Film, Mail, ImageIcon, Coins, TrendingUp, CheckCircle, Shield } from 'lucide-react';
-import { useHashRoute } from '../hooks/useHashRoute';
-import { useCoinBalance } from '../hooks/useCoinBalance';
-import { CoinPurchaseDialog } from '../components/CoinPurchaseDialog';
-import { TransactionHistoryPanel } from '../components/TransactionHistoryPanel';
-import { LOW_BALANCE_THRESHOLD } from '../constants/coins';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { useCoinBalance } from '../hooks/useCoinBalance';
+import { useTransactionHistory } from '../hooks/useTransactionHistory';
 import { useGetCallerUserProfile } from '../hooks/useProfile';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { TransactionHistoryPanel } from '../components/TransactionHistoryPanel';
+import {
+  MessageSquare,
+  Video,
+  Clapperboard,
+  Mail,
+  ImageIcon,
+  Coins,
+  Sparkles,
+  User,
+  CheckCircle,
+} from 'lucide-react';
 
 export default function DashboardScreen() {
-  const { navigate } = useHashRoute();
-  const { data: coinBalance, isLoading: balanceLoading, isFetched: balanceFetched } = useCoinBalance();
-  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
   const { identity } = useInternetIdentity();
-  const { data: userProfile, isLoading: profileLoading } = useGetCallerUserProfile();
+  const { data: coinBalance, isLoading: balanceLoading } = useCoinBalance();
+  const { data: userProfile } = useGetCallerUserProfile();
 
-  const isLowBalance = coinBalance !== undefined && coinBalance <= LOW_BALANCE_THRESHOLD;
+  const principal = identity?.getPrincipal().toString() ?? 'Not connected';
+  const displayName = userProfile?.displayName ?? 'User';
+  const balance = coinBalance !== undefined ? Number(coinBalance) : null;
 
-  const principalId = identity?.getPrincipal().toString() || '';
-  const displayName = userProfile?.displayName || 'User';
+  const features = [
+    {
+      icon: MessageSquare,
+      title: 'AI Chat',
+      description: 'Chat with AI assistant for any task',
+      cost: '20 coins/message',
+      view: 'chat',
+    },
+    {
+      icon: Video,
+      title: 'YouTube Script',
+      description: 'Generate scripts, voiceovers, subtitles & SEO packs',
+      cost: '20 coins/generation',
+      view: 'youtube-script',
+    },
+    {
+      icon: Clapperboard,
+      title: 'AI Video Maker',
+      description: 'Create complete video production plans',
+      cost: '20 coins/video',
+      view: 'ai-video-maker',
+    },
+    {
+      icon: Mail,
+      title: 'Cold Email',
+      description: 'Generate professional cold email sequences',
+      cost: '20 coins/email',
+      view: 'cold-email',
+    },
+    {
+      icon: ImageIcon,
+      title: 'AI Image Generator',
+      description: 'Generate stunning AI images from text prompts',
+      cost: '10 coins/image',
+      view: 'ai-image-generator',
+    },
+    {
+      icon: User,
+      title: 'Profile',
+      description: 'Manage your account settings and preferences',
+      cost: 'Free',
+      view: 'profile',
+    },
+  ];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      {/* Hero Section */}
-      <div className="text-center space-y-4 py-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-          <Sparkles className="h-4 w-4" />
-          <span>AI Assistant Dashboard</span>
+    <div className="space-y-6">
+      {/* Welcome Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Welcome back, {displayName}! 👋
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Here's your Shake.com dashboard overview
+          </p>
         </div>
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
-          Welcome to Wrapper AI
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-balance">
-          Your intelligent assistant is ready. Choose a feature below to get started.
-        </p>
+        <Badge variant="secondary" className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5">
+          <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+          <span className="text-xs font-medium">Connected</span>
+        </Badge>
       </div>
 
-      {/* Authentication Status Card */}
-      <Card className="shadow-sm border-2 bg-gradient-to-br from-green-500/5 to-green-500/10">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            Authentication Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-start gap-3">
-            <Shield className="h-5 w-5 text-green-600 mt-0.5" />
-            <div className="flex-1 space-y-2">
-              <p className="text-sm font-medium text-foreground">
-                Successfully authenticated via Internet Identity
-              </p>
-              {!profileLoading && userProfile && (
-                <p className="text-sm text-muted-foreground">
-                  Logged in as: <span className="font-semibold text-foreground">{displayName}</span>
-                </p>
-              )}
-              <div className="bg-muted/50 rounded-lg p-3 mt-2">
-                <p className="text-xs text-muted-foreground mb-1">Your Principal ID:</p>
-                <p className="text-xs font-mono text-foreground break-all">
-                  {principalId}
-                </p>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Coin Balance Card */}
+        <Card className="border-2 border-primary/20 bg-primary/5">
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-2">
+              <Coins className="h-4 w-4 text-primary" />
+              Coin Balance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {balanceLoading ? (
+              <Skeleton className="h-8 w-24" />
+            ) : (
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-primary">{balance ?? 0}</span>
+                <span className="text-sm text-muted-foreground">coins</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Your identity is securely stored and managed by the Internet Computer.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Coin Balance Card */}
-      {balanceLoading && !balanceFetched ? (
-        <Card className="shadow-sm border-2 bg-gradient-to-br from-primary/5 to-primary/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Coins className="h-5 w-5 text-primary" />
-              Your Coin Balance
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-center py-8">
-              <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            </div>
+            )}
           </CardContent>
         </Card>
-      ) : (
-        coinBalance !== undefined && (
-          <Card className="shadow-sm border-2 bg-gradient-to-br from-primary/5 to-primary/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Coins className="h-5 w-5 text-primary" />
-                Your Coin Balance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-4xl font-bold text-foreground">{coinBalance}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Available Coins</p>
-                </div>
-                <Button
-                  onClick={() => setPurchaseDialogOpen(true)}
-                  size="lg"
-                  className="gap-2"
-                >
-                  <Coins className="h-5 w-5" />
-                  Buy More Coins
-                </Button>
-              </div>
 
-              {isLowBalance && (
-                <Alert className="bg-destructive/10 border-destructive/20">
-                  <TrendingUp className="h-4 w-4 text-destructive" />
-                  <AlertDescription className="text-destructive">
-                    Your coin balance is running low. Consider purchasing more coins to avoid interruptions.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
-        )
-      )}
-
-      {/* Feature Cards */}
-      <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-        {/* AI Chat Card */}
-        <Card className="shadow-sm border-2 hover:border-primary/50 transition-all duration-300 group cursor-pointer" onClick={() => navigate('chat')}>
-          <CardHeader>
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-              <MessageSquare className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-2xl">AI Chat</CardTitle>
-            <CardDescription className="text-base">
-              Start a conversation with your AI assistant. Ask questions, get insights, and explore ideas.
+        {/* Principal ID Card */}
+        <Card className="sm:col-span-2 lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              Your Account
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full group-hover:bg-primary/90" onClick={() => navigate('chat')}>
-              Open AI Chat
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <p className="text-sm font-medium truncate">{displayName}</p>
+            <p className="text-xs text-muted-foreground truncate mt-1">{principal}</p>
           </CardContent>
         </Card>
+      </div>
 
-        {/* YouTube Script Generator Card */}
-        <Card className="shadow-sm border-2 hover:border-primary/50 transition-all duration-300 group cursor-pointer" onClick={() => navigate('youtube-script')}>
-          <CardHeader>
-            <div className="h-12 w-12 rounded-xl bg-destructive/10 flex items-center justify-center mb-4 group-hover:bg-destructive/20 transition-colors">
-              <Video className="h-6 w-6 text-destructive" />
-            </div>
-            <CardTitle className="text-2xl">YouTube Script</CardTitle>
-            <CardDescription className="text-base">
-              Generate professional YouTube video scripts with hooks, intros, main points, and CTAs.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full group-hover:border-destructive group-hover:text-destructive" onClick={() => navigate('youtube-script')}>
-              Create Script
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* AI Video Maker Card */}
-        <Card className="shadow-sm border-2 hover:border-primary/50 transition-all duration-300 group cursor-pointer" onClick={() => navigate('ai-video-maker')}>
-          <CardHeader>
-            <div className="h-12 w-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
-              <Film className="h-6 w-6 text-accent" />
-            </div>
-            <CardTitle className="text-2xl">AI Video Maker</CardTitle>
-            <CardDescription className="text-base">
-              Create complete video production plans with scripts, storyboards, and animation instructions.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full group-hover:border-accent group-hover:text-accent" onClick={() => navigate('ai-video-maker')}>
-              Create Video Plan
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* AI Image Generator Card */}
-        <Card className="shadow-sm border-2 hover:border-primary/50 transition-all duration-300 group cursor-pointer" onClick={() => navigate('ai-image-generator')}>
-          <CardHeader>
-            <div className="h-12 w-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-4 group-hover:bg-secondary/20 transition-colors">
-              <ImageIcon className="h-6 w-6 text-secondary-foreground" />
-            </div>
-            <CardTitle className="text-2xl">AI Image Generator</CardTitle>
-            <CardDescription className="text-base">
-              Generate stunning AI images with advanced parameters and style controls.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full group-hover:border-secondary group-hover:text-secondary-foreground" onClick={() => navigate('ai-image-generator')}>
-              Generate Image
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Cold Email Generator Card */}
-        <Card className="shadow-sm border-2 hover:border-primary/50 transition-all duration-300 group cursor-pointer" onClick={() => navigate('cold-email')}>
-          <CardHeader>
-            <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center mb-4 group-hover:bg-muted/80 transition-colors">
-              <Mail className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <CardTitle className="text-2xl">Cold Email Generator</CardTitle>
-            <CardDescription className="text-base">
-              Create professional cold email campaigns with subject lines, main email, and follow-ups.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full" onClick={() => navigate('cold-email')}>
-              Generate Email
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Profile Card */}
-        <Card className="shadow-sm border-2 hover:border-primary/50 transition-all duration-300 group cursor-pointer" onClick={() => navigate('profile')}>
-          <CardHeader>
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-              <User className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-2xl">Profile</CardTitle>
-            <CardDescription className="text-base">
-              Manage your profile settings, view your principal, and logout.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full" onClick={() => navigate('profile')}>
-              View Profile
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </CardContent>
-        </Card>
+      {/* Features Grid */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          Available Features
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <Card
+                key={feature.view}
+                className="hover:border-primary/50 transition-colors cursor-default"
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <CardTitle className="text-base">{feature.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  <Badge variant="outline" className="mt-3 text-xs">
+                    {feature.cost}
+                  </Badge>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
 
       {/* Transaction History */}
       <TransactionHistoryPanel />
 
-      {/* Getting Started Info */}
-      <Card className="shadow-sm border-2">
+      {/* Getting Started */}
+      <Card className="bg-muted/30">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Getting Started
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            Getting Started with Shake.com
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <h3 className="font-semibold text-foreground">How the Coin System Works</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Each AI feature costs 20 coins per use</li>
-              <li>New users receive 200 free coins on first login</li>
-              <li>Purchase more coins anytime from the dashboard or header</li>
-              <li>Track your usage in the transaction history below</li>
-            </ul>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-semibold text-foreground">Available Features</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>AI Chat: Conversational AI assistant with image support</li>
-              <li>YouTube Script: Generate complete video scripts with voiceover and subtitles</li>
-              <li>AI Video Maker: Create video production plans with storyboards</li>
-              <li>AI Image Generator: Generate images with advanced parameters</li>
-              <li>Cold Email: Professional email campaigns with follow-ups</li>
-            </ul>
-          </div>
+        <CardContent className="space-y-2 text-sm text-muted-foreground">
+          <p>• You received <strong>200 free coins</strong> on your first login to get started.</p>
+          <p>• Each AI feature costs coins — use them wisely or purchase more anytime.</p>
+          <p>• Navigate using the top menu to access all AI tools.</p>
+          <p>• Your data is securely stored on the Internet Computer blockchain.</p>
         </CardContent>
       </Card>
-
-      {/* Coin Purchase Dialog */}
-      <CoinPurchaseDialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen} />
     </div>
   );
 }

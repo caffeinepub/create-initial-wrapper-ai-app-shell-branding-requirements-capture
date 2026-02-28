@@ -1,15 +1,40 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-28T04:51:15.367Z",
-  "summary": "The diff implements all three requirements: a LinkShare component with Copy Link + visual feedback (REQ-1), social share buttons for WhatsApp, Facebook, and Twitter/X using standard web share URLs (REQ-2), and integration into the site header (AuthenticatedLayout) for both desktop and mobile (REQ-3). No constrained files were modified. No hallucinated features were found.",
+  "generatedAt": "2026-02-28T05:53:47.395Z",
+  "summary": "All three requirements are implemented in the diff. REQ-1 is satisfied by frontend/index.html with the <title>Shake.com</title> tag and the apple-mobile-web-app-title meta tag. REQ-2 is satisfied by frontend/public/manifest.json with both 'name' and 'short_name' set to 'Shake.com'. REQ-3 is satisfied by updates to AuthenticatedLayout.tsx, LoginScreen.tsx, and DashboardScreen.tsx showing 'Shake.com' branding throughout the UI with no remaining 'Wrapper AI' text visible in the UI components.",
   "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.95,
+  "hallucinated_features": [
+    {
+      "description": "Service worker registration script added to frontend/index.html",
+      "reason": "The build request specified a branding/name update only and explicitly forbids changing functional logic. Adding a service worker registration script is a functional addition not requested.",
+      "evidence": [
+        "frontend/index.html"
+      ]
+    },
+    {
+      "description": "PWA install banner overlay (PwaInstallBanner) added to App.tsx",
+      "reason": "The file summary mentions a new PwaInstallBanner overlay component added to App.tsx. This is a new feature not requested in the build request, which explicitly states 'Adding new features or pages' is a non-goal.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "ApiKeySetup component with localStorage-based API key management added to AIChatScreen",
+      "reason": "The file summary describes a new ApiKeySetup component in AIChatScreen that validates and saves Groq API keys to localStorage. This is a new feature not requested in the branding-only update.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "confidence": 0.72,
   "changed_files": [
     "frontend-file-summaries.txt",
+    "frontend/index.html",
+    "frontend/public/manifest.json",
     "frontend/src/components/AuthenticatedLayout.tsx",
-    "frontend/src/components/LinkShare.tsx",
+    "frontend/src/pages/DashboardScreen.tsx",
+    "frontend/src/pages/LoginScreen.tsx",
     "project_state.json"
   ]
 }

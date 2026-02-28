@@ -102,10 +102,10 @@ export default function AuthenticatedLayout() {
           <div className="flex items-center gap-2">
             <img
               src="/assets/generated/wrapper-ai-logo.dim_512x512.png"
-              alt="Wrapper AI"
+              alt="Shake.com"
               className="h-8 w-8"
             />
-            <span className="font-bold text-xl hidden sm:inline">Wrapper AI</span>
+            <span className="font-bold text-xl hidden sm:inline">Shake.com</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -273,7 +273,7 @@ export default function AuthenticatedLayout() {
       <footer className="border-t bg-muted/50 py-6 mt-auto">
         <div className="container px-4 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Wrapper AI. Built with ❤️ using{' '}
+            © {new Date().getFullYear()} Shake.com. Built with ❤️ using{' '}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
                 window.location.hostname

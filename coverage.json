@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-28T04:51:15.370Z",
+  "generatedAt": "2026-02-28T05:53:47.398Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -12,35 +12,39 @@
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add a Link Share component that allows users to copy the current page URL to their clipboard via a 'Copy Link' button, with visual confirmation feedback (e.g., tooltip or button text change) after copying.",
+        "summary": "Update the browser tab title and all HTML meta tags (including Apple mobile web app title) to use 'Shake.com' instead of the current app name.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/LinkShare.tsx"
+          "frontend/index.html"
         ],
         "matchedFiles": [
-          "frontend/src/components/LinkShare.tsx"
+          "frontend/index.html"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Add social share buttons for WhatsApp, Facebook, and Twitter/X that open the respective share dialogs in a new tab with the current page URL pre-filled as the shared link.",
+        "summary": "Update the PWA manifest (frontend/public/manifest.json) so that 'name' and 'short_name' fields are both set to 'Shake.com'.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/LinkShare.tsx"
+          "frontend/public/manifest.json"
         ],
         "matchedFiles": [
-          "frontend/src/components/LinkShare.tsx"
+          "frontend/public/manifest.json"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Place the Link Share component (Copy Link + social share buttons) in a prominent, visible location such as the site header or a floating share bar so it is accessible from any page.",
+        "summary": "Update all visible logo text, app name labels, and header/sidebar branding throughout the frontend UI to display 'Shake.com' instead of the previous app name ('Wrapper AI').",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/AuthenticatedLayout.tsx"
+          "frontend/src/components/AuthenticatedLayout.tsx",
+          "frontend/src/pages/LoginScreen.tsx",
+          "frontend/src/pages/DashboardScreen.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/AuthenticatedLayout.tsx"
+          "frontend/src/components/AuthenticatedLayout.tsx",
+          "frontend/src/pages/LoginScreen.tsx",
+          "frontend/src/pages/DashboardScreen.tsx"
         ]
       }
     ]
@@ -50,8 +54,11 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/index.html",
+    "frontend/public/manifest.json",
     "frontend/src/components/AuthenticatedLayout.tsx",
-    "frontend/src/components/LinkShare.tsx",
+    "frontend/src/pages/DashboardScreen.tsx",
+    "frontend/src/pages/LoginScreen.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

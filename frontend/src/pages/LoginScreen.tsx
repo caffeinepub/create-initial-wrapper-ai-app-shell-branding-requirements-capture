@@ -33,13 +33,13 @@ export default function LoginScreen() {
       if (!testPopup || testPopup.closed || typeof testPopup.closed === 'undefined') {
         console.warn('⚠️ Popup blocker detected - attempting fallback');
         toast.warning('Popup Blocker Detected', {
-          description: 'Please allow popups for this site to enable Internet Identity login.',
+          description: 'Please allow popups for this site to enable login.',
         });
       } else {
         testPopup.close();
       }
 
-      console.log('🚀 Calling Internet Identity login...');
+      console.log('🚀 Calling login...');
       await login();
       console.log('✅ Login call completed successfully');
     } catch (error: any) {
@@ -79,12 +79,12 @@ export default function LoginScreen() {
             <div className="flex items-center gap-3 sm:gap-4">
               <img
                 src="/assets/generated/wrapper-ai-logo.dim_512x512.png"
-                alt="Wrapper AI Logo"
+                alt="Shake.com Logo"
                 className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl"
               />
               <div className="flex flex-col">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-                  Wrapper AI
+                  Shake.com
                 </h1>
                 <span className="text-xs text-muted-foreground font-normal">
                   AI-Powered Assistant
@@ -105,7 +105,7 @@ export default function LoginScreen() {
             <div className="mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
               <Sparkles className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl sm:text-3xl">Welcome to Wrapper AI</CardTitle>
+            <CardTitle className="text-2xl sm:text-3xl">Welcome to Shake.com</CardTitle>
             <CardDescription className="text-base">
               Sign in with Internet Identity to access your AI assistant dashboard, chat, and all features.
             </CardDescription>
@@ -135,27 +135,17 @@ export default function LoginScreen() {
               ) : (
                 <>
                   <LogIn className="h-5 w-5 mr-2" />
-                  Sign in with Internet Identity
+                  Sign In
                 </>
               )}
             </Button>
 
-            {/* Retry Button for Errors */}
-            {isLoginError && (
-              <Button
-                onClick={handleLogin}
-                variant="outline"
-                className="w-full"
-              >
-                Retry Login
-              </Button>
-            )}
-
             <div className="text-center text-sm text-muted-foreground space-y-2">
-              <p>Secure authentication powered by Internet Computer</p>
-              <p className="text-xs">New users receive 200 free coins on first login</p>
-              <p className="text-xs text-muted-foreground/70">
-                Internet Identity opens in a new window. Please allow popups if prompted.
+              <p>
+                Shake.com uses Internet Identity for secure, passwordless authentication.
+              </p>
+              <p className="text-xs">
+                Your data is private and stored on the Internet Computer blockchain.
               </p>
             </div>
           </CardContent>
@@ -163,28 +153,21 @@ export default function LoginScreen() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card/30 mt-auto">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p className="text-center sm:text-left">
-              © {new Date().getFullYear()} Wrapper AI. All rights reserved.
-            </p>
-            <p className="text-center sm:text-right">
-              Built with{' '}
-              <span className="text-primary inline-block animate-pulse">♥</span>{' '}
-              using{' '}
-              <a
-                href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                  typeof window !== 'undefined' ? window.location.hostname : 'wrapper-ai'
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-foreground hover:text-primary transition-colors font-medium"
-              >
-                caffeine.ai
-              </a>
-            </p>
-          </div>
+      <footer className="border-t border-border py-6">
+        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+          <p>
+            © {new Date().getFullYear()} Shake.com. Built with ❤️ using{' '}
+            <a
+              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
+                window.location.hostname
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              caffeine.ai
+            </a>
+          </p>
         </div>
       </footer>
     </div>
