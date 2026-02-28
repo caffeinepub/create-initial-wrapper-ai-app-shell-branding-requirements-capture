@@ -1,90 +1,53 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix Groq API Key integration and error handling in AI Chat",
+  "title": "Add Link Sharing Feature with Copy Link and Social Share Options",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Fix Groq API integration to correctly read, store, and pass the API key in Authorization headers",
+      "summary": "Create a LinkShare component with a 'Copy Link' button that copies the current page URL to the clipboard and displays visual confirmation feedback",
       "acceptanceCriteria": [
-        "Entering a valid Groq API key in the app and sending the first message does not produce an 'Invalid API Key' or 401 error",
-        "The Authorization header sent to Groq API is correctly formatted as 'Bearer <key>' with no extra spaces",
-        "The API key is trimmed of any leading/trailing whitespace before use"
+        "A 'Copy Link' button is visible on the page",
+        "Clicking it copies the current page URL to the clipboard",
+        "Visual feedback is shown after successful copy (e.g., button label changes to 'Copied!' for 2 seconds)"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useChat.ts",
-          "operation": "modify",
-          "description": "Fix the API key handling in the sendMessage function: (1) When reading the API key from localStorage or environment variable, trim any whitespace using .trim(); (2) Ensure the Authorization header is constructed as `Bearer ${apiKey.trim()}` with proper string interpolation; (3) Verify that the key is used consistently throughout the request configuration; (4) Add validation to check that the trimmed key is non-empty before making the API call"
-        },
-        {
-          "path": "frontend/src/pages/AIChatScreen.tsx",
-          "operation": "modify",
-          "description": "Update the API key input handling to trim whitespace on save: (1) When the user enters or updates the API key in the settings/input field, apply .trim() before storing it in localStorage; (2) Add visual feedback (e.g., a success toast) when the key is successfully saved; (3) Ensure the trimmed key is immediately used for subsequent API calls without requiring a page refresh"
+          "path": "frontend/src/components/LinkShare.tsx",
+          "operation": "create",
+          "description": "Create a LinkShare component that includes a 'Copy Link' button using the Clipboard API (navigator.clipboard.writeText) to copy window.location.href. The button should show visual feedback by changing its text to 'Copied!' for 2 seconds after successful copy, then reverting to 'Copy Link'. Use shadcn/ui Button component and lucide-react icons for consistency with the existing UI. Verify the shadcn/ui component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Replace hardcoded Groq API key in .env with placeholder and prioritize user-entered keys",
+      "summary": "Add social share buttons for WhatsApp, Facebook, and Twitter/X to the LinkShare component that open share dialogs with the current page URL",
       "acceptanceCriteria": [
-        "The hardcoded Groq API key in frontend/.env is replaced with a placeholder or empty value",
-        "The app correctly uses the API key entered by the user in the input field, giving it priority over the environment variable",
-        "If no key is stored, the user is prompted to enter one"
+        "Separate share buttons for WhatsApp, Facebook, and Twitter/X are visible",
+        "Clicking each button opens the corresponding platform's share URL in a new browser tab",
+        "The current page URL is pre-populated in the share dialog for each platform"
       ],
       "file_operations": [
         {
-          "path": "frontend/.env",
+          "path": "frontend/src/components/LinkShare.tsx",
           "operation": "modify",
-          "description": "Replace the existing VITE_GROQ_API_KEY value (gsk_5V006bT4...) with an empty string or placeholder comment like '# Add your Groq API key here or enter it in the app settings'. Remove any actual key value to prevent hardcoding credentials in the repository"
-        },
-        {
-          "path": "frontend/src/hooks/useChat.ts",
-          "operation": "modify",
-          "description": "Update the API key resolution logic to prioritize user input: (1) First check localStorage for a user-entered key; (2) Fall back to the environment variable VITE_GROQ_API_KEY only if localStorage is empty; (3) If both are empty or undefined, set an internal flag to prompt the user; (4) Ensure the key resolution happens at the start of sendMessage before the API call"
-        },
-        {
-          "path": "frontend/src/pages/AIChatScreen.tsx",
-          "operation": "modify",
-          "description": "Add a UI prompt when no API key is available: (1) Check if a valid API key exists in localStorage or environment on component mount; (2) If missing, display an alert or banner asking the user to enter their Groq API key; (3) Provide an input field or settings button to capture the key; (4) Hide the prompt once a valid key is saved"
+          "description": "Add three social share buttons (WhatsApp, Facebook, Twitter/X) to the LinkShare component. Each button should construct the appropriate share URL using the current page URL (window.location.href): WhatsApp uses 'https://wa.me/?text=' + encodeURIComponent(url), Facebook uses 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), and Twitter/X uses 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(url). Open share URLs using window.open(shareUrl, '_blank', 'noopener,noreferrer'). Style the buttons with platform-appropriate colors and icons using lucide-react or simple text labels. Verify the shadcn/ui component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Improve error handling to display clear, actionable messages for API authentication, rate limit, and network errors",
+      "summary": "Integrate the LinkShare component into the AuthenticatedLayout header so it is visible and accessible from any page",
       "acceptanceCriteria": [
-        "When the Groq API returns a 401 error, the UI shows a message like 'Invalid API Key. Please check your key and try again.'",
-        "When the API returns a 429 error, the UI shows a rate limit message",
-        "Network errors are caught and shown to the user with a friendly message",
-        "Errors are displayed inline in the chat UI, not just in the console"
+        "The share component is visible without scrolling on all major pages",
+        "The component does not obstruct primary content",
+        "The component is responsive and works on both mobile and desktop layouts"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useChat.ts",
+          "path": "frontend/src/components/AuthenticatedLayout.tsx",
           "operation": "modify",
-          "description": "Enhance error handling in the sendMessage function: (1) Wrap the Groq API fetch call in a try-catch block; (2) Check response.status explicitly: if 401, throw an error with message 'Invalid API Key. Please check your key and try again.'; if 429, throw 'Rate limit exceeded. Please try again later.'; (3) For network errors (fetch failures), throw 'Network error. Please check your connection and try again.'; (4) Store the error message in the hook's state (e.g., setError) so it can be displayed in the UI; (5) Append an assistant message with role 'assistant' and content containing the error to the messages array for inline display"
-        },
-        {
-          "path": "frontend/src/pages/AIChatScreen.tsx",
-          "operation": "modify",
-          "description": "Display errors inline in the chat UI: (1) Access the error state from useChat hook; (2) When an error exists, render an error message bubble in the chat conversation thread styled distinctly (e.g., red background or border); (3) Ensure the error is shown below the user's last message; (4) Provide a 'Retry' or 'Dismiss' button within the error message for better UX; (5) Clear the error state when the user sends a new message or dismisses the error"
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Add client-side validation for the Groq API key input to ensure correct format before saving",
-      "acceptanceCriteria": [
-        "The API key input field validates that the value starts with 'gsk_'",
-        "If the key format is invalid, an inline error message is shown before allowing submission",
-        "A valid key passes validation and is saved without error"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/AIChatScreen.tsx",
-          "operation": "modify",
-          "description": "Add client-side validation to the API key input field: (1) On input change or before saving, check if the trimmed key starts with 'gsk_' using key.trim().startsWith('gsk_'); (2) Validate that the key length is at least 20 characters (or a reasonable minimum); (3) If validation fails, display an inline error message below the input field (e.g., 'Invalid API key format. Groq keys start with gsk_'); (4) Disable the save button until validation passes; (5) Clear the error message when the user corrects the input; (6) Only save the key to localStorage if validation succeeds"
+          "description": "Import and add the LinkShare component to the sticky header section of AuthenticatedLayout, positioning it between the navigation items and the coin balance display. Ensure the component is visible on both desktop (inline in the header) and mobile (within the mobile menu if space is constrained). Use flexbox or grid layout to maintain proper spacing and prevent obstruction of existing header elements. The component should be accessible from all authenticated pages without requiring scrolling."
         }
       ]
     }

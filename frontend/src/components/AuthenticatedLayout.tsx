@@ -5,6 +5,7 @@ import { useCoinBalance } from '../hooks/useCoinBalance';
 import { useIsAdmin } from '../hooks/useIsAdmin';
 import { Button } from '@/components/ui/button';
 import { CoinPurchaseDialog } from './CoinPurchaseDialog';
+import LinkShare from './LinkShare';
 import {
   Home,
   MessageSquare,
@@ -140,6 +141,11 @@ export default function AuthenticatedLayout() {
 
           {/* Right Section */}
           <div className="flex items-center gap-2">
+            {/* Share Button (Desktop) */}
+            <div className="hidden sm:block">
+              <LinkShare />
+            </div>
+
             {/* Coin Balance */}
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary">
               <Coins className="h-4 w-4" />
@@ -201,6 +207,11 @@ export default function AuthenticatedLayout() {
                 ) : (
                   <span className="text-sm font-bold">{balance} coins</span>
                 )}
+              </div>
+
+              {/* Share (Mobile) */}
+              <div className="px-1 py-1">
+                <LinkShare />
               </div>
 
               {/* Menu Items */}

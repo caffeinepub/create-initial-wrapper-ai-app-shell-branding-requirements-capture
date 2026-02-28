@@ -1,65 +1,46 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-27T04:52:42.957Z",
+  "generatedAt": "2026-02-28T04:51:15.370Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Fix the Groq API integration in `frontend/src/hooks/useChat.ts` so that when a user enters a valid API key in the app, it is correctly read, stored, and passed as the Authorization header in all Groq API requests (e.g., `Authorization: Bearer <key>`). Ensure no extra whitespace or formatting issues corrupt the key value.",
+        "summary": "Add a Link Share component that allows users to copy the current page URL to their clipboard via a 'Copy Link' button, with visual confirmation feedback (e.g., tooltip or button text change) after copying.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useChat.ts",
-          "frontend/src/pages/AIChatScreen.tsx"
+          "frontend/src/components/LinkShare.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useChat.ts",
-          "frontend/src/pages/AIChatScreen.tsx"
+          "frontend/src/components/LinkShare.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update `frontend/.env` to remove or replace the currently hardcoded (and potentially expired/revoked) `VITE_GROQ_API_KEY` value with a placeholder, and ensure the app reads the API key from user input at runtime rather than relying solely on the environment variable.",
+        "summary": "Add social share buttons for WhatsApp, Facebook, and Twitter/X that open the respective share dialogs in a new tab with the current page URL pre-filled as the shared link.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/.env",
-          "frontend/src/hooks/useChat.ts",
-          "frontend/src/pages/AIChatScreen.tsx"
+          "frontend/src/components/LinkShare.tsx"
         ],
         "matchedFiles": [
-          "frontend/.env",
-          "frontend/src/hooks/useChat.ts",
-          "frontend/src/pages/AIChatScreen.tsx"
+          "frontend/src/components/LinkShare.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Improve error handling in the chat feature (`frontend/src/hooks/useChat.ts` and `frontend/src/pages/AIChatScreen.tsx`) to display clear, actionable error messages when the Groq API returns authentication errors (401), rate limit errors (429), or network failures. Show distinct messages for 'Invalid API Key', 'Rate limit exceeded', and 'Network error'.",
+        "summary": "Place the Link Share component (Copy Link + social share buttons) in a prominent, visible location such as the site header or a floating share bar so it is accessible from any page.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useChat.ts",
-          "frontend/src/pages/AIChatScreen.tsx"
+          "frontend/src/components/AuthenticatedLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useChat.ts",
-          "frontend/src/pages/AIChatScreen.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Add client-side validation for the Groq API key input field: validate that the key starts with 'gsk_' and has a minimum length before allowing the user to save it. Show an inline validation error if the format is incorrect.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/AIChatScreen.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/AIChatScreen.tsx"
+          "frontend/src/components/AuthenticatedLayout.tsx"
         ]
       }
     ]
@@ -69,9 +50,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/.env",
-    "frontend/src/hooks/useChat.ts",
-    "frontend/src/pages/AIChatScreen.tsx",
+    "frontend/src/components/AuthenticatedLayout.tsx",
+    "frontend/src/components/LinkShare.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

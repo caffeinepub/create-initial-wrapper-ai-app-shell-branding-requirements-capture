@@ -1,101 +1,76 @@
 {
   "kind": "build_request",
-  "title": "Fix Groq API Key integration and error handling in AI Chat",
+  "title": "Add Link Sharing Feature with Copy Link and Social Share Options",
   "projectName": "Wrapper AI",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix the Groq API integration in `frontend/src/hooks/useChat.ts` so that when a user enters a valid API key in the app, it is correctly read, stored, and passed as the Authorization header in all Groq API requests (e.g., `Authorization: Bearer <key>`). Ensure no extra whitespace or formatting issues corrupt the key value.",
+      "text": "Add a Link Share component that allows users to copy the current page URL to their clipboard via a 'Copy Link' button, with visual confirmation feedback (e.g., tooltip or button text change) after copying.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-3"
+          "msg-10",
+          "msg-12"
         ],
         "quotes": [
-          "First message sa he",
-          "Yes",
-          "Groq API Key integration को properly fix करना"
+          "Iss website ma link share options nahi ha too add this feature",
+          "A website with a link sharing feature, including a Copy Link button"
         ]
       },
       "acceptanceCriteria": [
-        "Entering a valid Groq API key in the app and sending the first message does not produce an 'Invalid API Key' or 401 error",
-        "The Authorization header sent to Groq API is correctly formatted as 'Bearer <key>' with no extra spaces",
-        "The API key is trimmed of any leading/trailing whitespace before use"
+        "A 'Copy Link' button is visible on the page",
+        "Clicking it copies the current page URL to the clipboard",
+        "Visual feedback is shown after successful copy (e.g., button label changes to 'Copied!' for 2 seconds)"
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update `frontend/.env` to remove or replace the currently hardcoded (and potentially expired/revoked) `VITE_GROQ_API_KEY` value with a placeholder, and ensure the app reads the API key from user input at runtime rather than relying solely on the environment variable.",
+      "text": "Add social share buttons for WhatsApp, Facebook, and Twitter/X that open the respective share dialogs in a new tab with the current page URL pre-filled as the shared link.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2"
+          "msg-10",
+          "msg-12"
         ],
         "quotes": [
-          "Ea new ha",
-          "app में API Key directly enter करने के बाद भी error आ रही है"
+          "social share options (WhatsApp, Facebook, Twitter)",
+          "A website with a link sharing feature"
         ]
       },
       "acceptanceCriteria": [
-        "The hardcoded Groq API key in frontend/.env is replaced with a placeholder or empty value",
-        "The app correctly uses the API key entered by the user in the input field, giving it priority over the environment variable",
-        "If no key is stored, the user is prompted to enter one"
+        "Separate share buttons for WhatsApp, Facebook, and Twitter/X are visible",
+        "Clicking each button opens the corresponding platform's share URL in a new browser tab",
+        "The current page URL is pre-populated in the share dialog for each platform"
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Improve error handling in the chat feature (`frontend/src/hooks/useChat.ts` and `frontend/src/pages/AIChatScreen.tsx`) to display clear, actionable error messages when the Groq API returns authentication errors (401), rate limit errors (429), or network failures. Show distinct messages for 'Invalid API Key', 'Rate limit exceeded', and 'Network error'.",
+      "text": "Place the Link Share component (Copy Link + social share buttons) in a prominent, visible location such as the site header or a floating share bar so it is accessible from any page.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2",
-          "msg-3"
+          "msg-12"
         ],
         "quotes": [
-          "Error handling को बेहतर बनाना ताकि सही error message दिखे",
-          "API Key validation को improve करना"
+          "Share button placed in a visible location (e.g., header or content area)"
         ]
       },
       "acceptanceCriteria": [
-        "When the Groq API returns a 401 error, the UI shows a message like 'Invalid API Key. Please check your key and try again.'",
-        "When the API returns a 429 error, the UI shows a rate limit message",
-        "Network errors are caught and shown to the user with a friendly message",
-        "Errors are displayed inline in the chat UI, not just in the console"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Add client-side validation for the Groq API key input field: validate that the key starts with 'gsk_' and has a minimum length before allowing the user to save it. Show an inline validation error if the format is incorrect.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2",
-          "msg-3"
-        ],
-        "quotes": [
-          "API Key validation को improve करना"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The API key input field validates that the value starts with 'gsk_'",
-        "If the key format is invalid, an inline error message is shown before allowing submission",
-        "A valid key passes validation and is saved without error"
+        "The share component is visible without scrolling on all major pages",
+        "The component does not obstruct primary content",
+        "The component is responsive and works on both mobile and desktop layouts"
       ]
     }
   ],
   "constraints": [
-    "Do not log or expose the Groq API key in the browser console or any UI element",
-    "Do not share or hardcode any real API key in source files",
-    "Preserve existing coin-deduction logic in useChat.ts"
+    "Social sharing must use standard web share URLs (no third-party SDKs or external APIs)",
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui"
   ],
   "nonGoals": [
-    "Changing the UI language to Hindi",
-    "Replacing Groq with another AI provider",
-    "Modifying backend Motoko code"
+    "Backend changes are not required for this feature",
+    "No new authentication or coin-gating for the share feature",
+    "No native Web Share API integration (stick to URL-based sharing links)"
   ],
   "imageRequirements": {
     "required": [],
